@@ -1,17 +1,31 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { LogIn, ShieldCheck } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { LogIn } from 'lucide-react';
+import { authService } from '../services/api.service';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple mock login
-    if (email && password) {
-      navigate('/dashboard');
+    setError('');
+    setLoading(true);
+
+    try {
+      await authService.login(email, password);
+      if (email.toLowerCase() === 'thomas.akiou@gmail.com') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Invalid credentials');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -34,11 +48,24 @@ const Login: React.FC = () => {
         </div>
 
         <form onSubmit={handleLogin}>
+          {error && (
+            <div style={{
+              padding: '0.75rem',
+              background: '#fee2e2',
+              color: '#991b1b',
+              borderRadius: 'var(--radius-md)',
+              marginBottom: '1rem',
+              fontSize: '0.875rem',
+              textAlign: 'center'
+            }}>
+              {error}
+            </div>
+          )}
           <div className="form-group">
             <label className="form-label">Email Address</label>
-            <input 
-              type="email" 
-              className="form-control" 
+            <input
+              type="email"
+              className="form-control"
               placeholder="name@neco.gov.ng"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -47,20 +74,30 @@ const Login: React.FC = () => {
           </div>
           <div className="form-group">
             <label className="form-label">Password</label>
-            <input 
-              type="password" 
-              className="form-control" 
+            <input
+              type="password"
+              className="form-control"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            style={{ width: '100%', marginTop: '1rem' }}
+            disabled={loading}
+          >
             <LogIn size={18} />
-            Sign In
+            {loading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
+
+        {/* <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.875rem' }}>
+          <span style={{ color: 'var(--text-muted)' }}>Don't have an account? </span>
+          <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Register</Link>
+        </div> */}
 
         <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
           &copy; 2026 National Examinations Council (NECO)

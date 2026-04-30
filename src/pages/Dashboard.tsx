@@ -1,12 +1,33 @@
-import React, { useState } from 'react';
-import { LogOut, MapPin, School as SchoolIcon, Edit3, Filter } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { LogOut, MapPin, School as SchoolIcon, Edit3, Filter, Settings, Key } from 'lucide-react';
 import { CUSTODIANS, SCHOOLS, type School } from '../data/mockData';
 import EditSchoolModal from '../components/EditSchoolModal.tsx';
+import { authService } from '../services/api.service';
 
 const Dashboard: React.FC = () => {
   const [selectedCustodian, setSelectedCustodian] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentSchool, setCurrentSchool] = useState<School | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!authService.isAuthenticated()) {
+      navigate('/login');
+      return;
+    }
+    if (authService.getEmail().toLowerCase() === 'thomas.akiou@gmail.com') {
+      navigate('/admin');
+    }
+  }, [navigate]);
+
+  const stateName = authService.getStateName().toUpperCase();
+  const stateOffice = `${stateName} STATE OFFICE`;
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/login');
+  };
 
   const filteredSchools = selectedCustodian
     ? SCHOOLS.filter(s => s.custodianId === selectedCustodian)
@@ -40,12 +61,22 @@ const Dashboard: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <img src="/neco.png" alt="NECO Logo" style={{ height: '28px', width: 'auto' }} />
           <div style={{ height: '20px', width: '1px', background: 'var(--border-color)' }}></div>
-          <h1 style={{ fontSize: '1.25rem', margin: 0, whiteSpace: 'nowrap' }}>NIGER STATE OFFICE</h1>
+          <h1 style={{ fontSize: '1.25rem', margin: 0, whiteSpace: 'nowrap' }}>{stateOffice}</h1>
         </div>
-        <button className="btn btn-outline" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <LogOut size={16} />
-          Sign Out
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <Link to="/change-password" title="Change Password" style={{ color: 'var(--text-muted)' }}>
+            <Key size={18} />
+          </Link>
+
+          <button 
+            className="btn btn-outline" 
+            style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+            onClick={handleLogout}
+          >
+            <LogOut size={16} />
+            Sign Out
+          </button>
+        </div>
       </header>
 
       {/* Main Content */}
