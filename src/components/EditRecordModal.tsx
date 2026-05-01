@@ -32,6 +32,10 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
     lga: record.lga || '',
   });
   
+  const currentUser = localStorage.getItem('user');
+  const userObj = currentUser ? JSON.parse(currentUser) : null;
+  const isAdmin = userObj?.email?.toLowerCase() === 'thomas.akiou@gmail.com';
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -77,8 +81,19 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
     }
   };
 
+  const isComplete = (data: Partial<DataRecord>) => {
+    const check = (val: string | null | undefined) => !!val && val.trim() !== '';
+    return check(data.state_name) && check(data.state_code) && check(data.sch_num) && check(data.sch_name) && check(data.cust_name) && check(data.cust_code) && check(data.cust_town) && check(data.lga) && check(data.type) && check(data.category) && check(data.accd_year);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isAdmin && isComplete(formData)) {
+      const confirm = window.confirm("Are you sure all fields are correct?\n\nClicking OK means you cannot edit this school again as it will be submitted for administrative review.");
+      if (!confirm) return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -112,20 +127,20 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
           <div className="form-grid">
             <div className="form-group">
               <label className="form-label">State Name</label>
-              <input type="text" name="state_name" className="form-control" value={formData.state_name} onChange={handleChange} required />
+              <input type="text" name="state_name" className="form-control" value={formData.state_name} onChange={handleChange} required={!isAdmin} />
             </div>
             <div className="form-group">
               <label className="form-label">State Code</label>
-              <input type="text" name="state_code" className="form-control" value={formData.state_code} onChange={handleChange} required />
+              <input type="text" name="state_code" className="form-control" value={formData.state_code} onChange={handleChange} required={!isAdmin} />
             </div>
             
             <div className="form-group">
               <label className="form-label">School Name</label>
-              <input type="text" name="sch_name" className="form-control" value={formData.sch_name} onChange={handleChange} required />
+              <input type="text" name="sch_name" className="form-control" value={formData.sch_name} onChange={handleChange} required={!isAdmin} />
             </div>
             <div className="form-group">
               <label className="form-label">School Number</label>
-              <input type="text" name="sch_num" className="form-control" value={formData.sch_num} onChange={handleChange} required />
+              <input type="text" name="sch_num" className="form-control" value={formData.sch_num} onChange={handleChange} required={!isAdmin} />
             </div>
             
             <div className="form-group">
@@ -137,7 +152,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
                 className="form-control" 
                 value={formData.cust_name} 
                 onChange={handleChange} 
-                required 
+                required={!isAdmin} 
               />
               {custodians && (
                 <datalist id="custodian-list">
@@ -149,21 +164,21 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
             </div>
             <div className="form-group">
               <label className="form-label">Custodian Code</label>
-              <input type="text" name="cust_code" className="form-control" value={formData.cust_code} onChange={handleChange} required />
+              <input type="text" name="cust_code" className="form-control" value={formData.cust_code} onChange={handleChange} required={!isAdmin} />
             </div>
 
             <div className="form-group">
               <label className="form-label">Custodian Town</label>
-              <input type="text" name="cust_town" className="form-control" value={formData.cust_town} onChange={handleChange} required />
+              <input type="text" name="cust_town" className="form-control" value={formData.cust_town} onChange={handleChange} required={!isAdmin} />
             </div>
             <div className="form-group">
               <label className="form-label">LGA</label>
-              <input type="text" name="lga" className="form-control" value={formData.lga || ''} onChange={handleChange} />
+              <input type="text" name="lga" className="form-control" value={formData.lga || ''} onChange={handleChange} required={!isAdmin} />
             </div>
 
             <div className="form-group">
               <label className="form-label">Type</label>
-              <select name="type" className="form-control" value={formData.type || ''} onChange={handleChange}>
+              <select name="type" className="form-control" value={formData.type || ''} onChange={handleChange} required={!isAdmin}>
                 <option value="">Select Type</option>
                 <option value="BOYS">BOYS</option>
                 <option value="GIRLS">GIRLS</option>
@@ -173,7 +188,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
 
             <div className="form-group">
               <label className="form-label">Category</label>
-              <select name="category" className="form-control" value={formData.category || ''} onChange={handleChange}>
+              <select name="category" className="form-control" value={formData.category || ''} onChange={handleChange} required={!isAdmin}>
                 <option value="">Select Category</option>
                 <option value="PRIVATE">PRIVATE</option>
                 <option value="PUBLIC">PUBLIC</option>
@@ -188,6 +203,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
                 className="form-control" 
                 value={formatDateForInput(formData.accd_year || '')} 
                 onChange={handleDateChange} 
+                required={!isAdmin} 
               />
             </div>
           </div>

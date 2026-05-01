@@ -46,17 +46,26 @@ const Dashboard: React.FC = () => {
     fetchRecords();
   }, [examType, stateName]);
 
+  const isComplete = (r: DataRecord) => {
+    const check = (val: string | null | undefined) => !!val && val.trim() !== '';
+    return check(r.state_name) && check(r.state_code) && check(r.sch_num) && check(r.sch_name) && check(r.cust_name) && check(r.cust_code) && check(r.cust_town) && check(r.lga) && check(r.type) && check(r.category) && check(r.accd_year);
+  };
+
+  const activeRecords = useMemo(() => {
+    return records.filter(r => !isComplete(r));
+  }, [records]);
+
   const custodians = useMemo(() => {
     const map = new Map<string, {name: string, code: string, town: string}>();
-    records.forEach(r => {
+    activeRecords.forEach(r => {
       if (r.cust_name && r.cust_name.trim() !== '' && !map.has(r.cust_name)) {
         map.set(r.cust_name, { name: r.cust_name, code: r.cust_code || '', town: r.cust_town || '' });
       }
     });
     return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
-  }, [records]);
+  }, [activeRecords]);
 
-  const filteredSchools = records.filter(r => {
+  const filteredSchools = activeRecords.filter(r => {
     if (!selectedCustodian) {
       return !r.cust_name || r.cust_name.trim() === '';
     }
