@@ -3,9 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   Upload, Download, Filter, Search, Trash2, RefreshCw, 
   ArrowLeft, Database, ChevronDown, ChevronLeft, ChevronRight, X, AlertTriangle, 
-  FileSpreadsheet, LogOut, Key, Users
+  FileSpreadsheet, LogOut, Key, Users, Edit3
 } from 'lucide-react';
 import { authService, dataService, type DataRecord, type ExamType } from '../services/api.service';
+import EditRecordModal from '../components/EditRecordModal.tsx';
 
 const DataManagement: React.FC = () => {
   const [examType, setExamType] = useState<ExamType>('ssce');
@@ -19,6 +20,7 @@ const DataManagement: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [editingRecord, setEditingRecord] = useState<DataRecord | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -26,7 +28,6 @@ const DataManagement: React.FC = () => {
   const [filterState, setFilterState] = useState('');
   const [filterCustodian, setFilterCustodian] = useState('');
   const [filterType, setFilterType] = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [filterLga, setFilterLga] = useState('');
 
@@ -56,19 +57,21 @@ const DataManagement: React.FC = () => {
     const states = [...new Set(records.map(r => r.state_name).filter(Boolean))].sort();
     const custodians = [...new Set(records.map(r => r.cust_name).filter(Boolean))].sort();
     const types = [...new Set(records.map(r => r.type).filter(Boolean) as string[])].sort();
-    const statuses = [...new Set(records.map(r => r.status).filter(Boolean) as string[])].sort();
     const categories = [...new Set(records.map(r => r.category).filter(Boolean) as string[])].sort();
     const lgas = [...new Set(records.map(r => r.lga).filter(Boolean) as string[])].sort();
-    return { states, custodians, types, statuses, categories, lgas };
+    return { states, custodians, types, categories, lgas };
   }, [records]);
 
   // Apply filters & search
   const filteredRecords = useMemo(() => {
     return records.filter(r => {
       if (filterState && r.state_name !== filterState) return false;
-      if (filterCustodian && r.cust_name !== filterCustodian) return false;
+      if (filterCustodian === '__UNASSIGNED__') {
+        if (r.cust_name && r.cust_name.trim() !== '') return false;
+      } else if (filterCustodian && r.cust_name !== filterCustodian) {
+        return false;
+      }
       if (filterType && r.type !== filterType) return false;
-      if (filterStatus && r.status !== filterStatus) return false;
       if (filterCategory && r.category !== filterCategory) return false;
       if (filterLga && r.lga !== filterLga) return false;
       if (searchTerm) {
@@ -84,9 +87,9 @@ const DataManagement: React.FC = () => {
       }
       return true;
     });
-  }, [records, filterState, filterCustodian, filterType, filterStatus, filterCategory, filterLga, searchTerm]);
+  }, [records, filterState, filterCustodian, filterType, filterCategory, filterLga, searchTerm]);
 
-  const activeFilterCount = [filterState, filterCustodian, filterType, filterStatus, filterCategory, filterLga].filter(Boolean).length;
+  const activeFilterCount = [filterState, filterCustodian, filterType, filterCategory, filterLga].filter(Boolean).length;
 
   // Pagination
   const totalPages = Math.ceil(filteredRecords.length / rowsPerPage);
@@ -98,13 +101,12 @@ const DataManagement: React.FC = () => {
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [filterState, filterCustodian, filterType, filterStatus, filterCategory, filterLga, searchTerm, rowsPerPage]);
+  }, [filterState, filterCustodian, filterType, filterCategory, filterLga, searchTerm, rowsPerPage]);
 
   const clearFilters = () => {
     setFilterState('');
     setFilterCustodian('');
     setFilterType('');
-    setFilterStatus('');
     setFilterCategory('');
     setFilterLga('');
     setSearchTerm('');
@@ -133,20 +135,19 @@ const DataManagement: React.FC = () => {
   const handleDownload = () => {
     if (filteredRecords.length === 0) return;
 
-    const headers = ['S/N', 'State Code', 'State Name', 'Sch Num', 'Sch Name', 'Cust Code', 'Cust Name', 'Cust Town', 'Status', 'Type', 'Category', 'Accd Year', 'LGA'];
+    const headers = ['S/N', 'State Code', 'State Name', 'Sch Num', 'Sch Name', 'Cust Code', 'Cust Name', 'Cust Town', 'Type', 'Category', 'Date', 'LGA'];
     const csvRows = [headers.join(',')];
 
     filteredRecords.forEach((r, i) => {
       const row = [
         i + 1,
-        `"${r.state_code}"`,
+        `"${String(r.state_code).padStart(3, '0')}"`,
         `"${r.state_name}"`,
         `"${r.sch_num}"`,
         `"${r.sch_name}"`,
         `"${r.cust_code}"`,
         `"${r.cust_name}"`,
         `"${r.cust_town}"`,
-        `"${r.status || ''}"`,
         `"${r.type || ''}"`,
         `"${r.category || ''}"`,
         `"${r.accd_year || ''}"`,
@@ -189,6 +190,25 @@ const DataManagement: React.FC = () => {
       setMessage({ type: 'error', text: err.message });
     } finally {
       setDeleting(false);
+    }
+  };
+
+  // Single delete
+  const handleSingleDelete = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this record? This action cannot be undone.')) return;
+
+    setMessage(null);
+    try {
+      await dataService.deleteRecord(examType, id);
+      setMessage({ type: 'success', text: 'Record deleted successfully.' });
+      setSelectedIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      fetchRecords();
+    } catch (err: any) {
+      setMessage({ type: 'error', text: err.message });
     }
   };
 
@@ -393,6 +413,7 @@ const DataManagement: React.FC = () => {
                   <label style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.25rem', display: 'block' }}>Custodian</label>
                   <select className="form-control" style={{ padding: '0.5rem' }} value={filterCustodian} onChange={e => setFilterCustodian(e.target.value)}>
                     <option value="">All Custodians</option>
+                    <option value="__UNASSIGNED__">-- Schools without Custodian Points --</option>
                     {filterOptions.custodians.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
@@ -401,13 +422,6 @@ const DataManagement: React.FC = () => {
                   <select className="form-control" style={{ padding: '0.5rem' }} value={filterType} onChange={e => setFilterType(e.target.value)}>
                     <option value="">All Types</option>
                     {filterOptions.types.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.25rem', display: 'block' }}>Status</label>
-                  <select className="form-control" style={{ padding: '0.5rem' }} value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
-                    <option value="">All Statuses</option>
-                    {filterOptions.statuses.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
@@ -486,9 +500,10 @@ const DataManagement: React.FC = () => {
                     <th>School</th>
                     <th>Custodian</th>
                     <th>Type</th>
-                    <th>Status</th>
                     <th>Category</th>
                     <th>LGA</th>
+                    <th>Date</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -529,22 +544,29 @@ const DataManagement: React.FC = () => {
                           </span>
                         )}
                       </td>
-                      <td>
-                        {record.status && (
-                          <span style={{
-                            padding: '0.15rem 0.5rem',
-                            borderRadius: '999px',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            background: record.status.toLowerCase() === 'active' ? '#dcfce7' : '#fee2e2',
-                            color: record.status.toLowerCase() === 'active' ? '#166534' : '#991b1b'
-                          }}>
-                            {record.status}
-                          </span>
-                        )}
-                      </td>
                       <td style={{ fontSize: '0.85rem' }}>{record.category || '—'}</td>
                       <td style={{ fontSize: '0.85rem' }}>{record.lga || '—'}</td>
+                      <td style={{ fontSize: '0.85rem' }}>{record.accd_year || '—'}</td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button 
+                            className="btn btn-outline" 
+                            style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem', color: 'var(--primary)', borderColor: 'var(--primary)' }}
+                            onClick={() => setEditingRecord(record)}
+                            title="Edit Record"
+                          >
+                            <Edit3 size={14} />
+                          </button>
+                          <button 
+                            className="btn btn-outline" 
+                            style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem', color: '#dc2626', borderColor: '#dc2626' }}
+                            onClick={() => handleSingleDelete(record.id)}
+                            title="Delete Record"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                   {filteredRecords.length === 0 && (
@@ -632,6 +654,19 @@ const DataManagement: React.FC = () => {
           )}
         </div>
       </main>
+
+      {editingRecord && (
+        <EditRecordModal 
+          record={editingRecord}
+          examType={examType}
+          onClose={() => setEditingRecord(null)}
+          onSuccess={() => {
+            setEditingRecord(null);
+            fetchRecords();
+            setMessage({ type: 'success', text: 'Record updated successfully!' });
+          }}
+        />
+      )}
     </div>
   );
 };

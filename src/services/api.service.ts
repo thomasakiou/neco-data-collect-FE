@@ -228,7 +228,7 @@ export const dataService = {
     return await response.json();
   },
 
-  async listRecords(examType: ExamType, skip = 0, limit = 10000): Promise<DataRecord[]> {
+  async listRecords(examType: ExamType, skip = 0, limit = 1000000): Promise<DataRecord[]> {
     const token = localStorage.getItem('token');
     const response = await fetch(`${BASE_URL}/${examType}/?skip=${skip}&limit=${limit}`, {
       method: 'GET',
@@ -262,4 +262,40 @@ export const dataService = {
 
     return await response.json();
   },
+
+  async deleteRecord(examType: ExamType, id: number) {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${BASE_URL}/${examType}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Failed to delete ${examType.toUpperCase()} record`);
+    }
+
+    return await response.json();
+  },
+
+  async updateRecord(examType: ExamType, id: number, data: Partial<DataRecord>) {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${BASE_URL}/${examType}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Failed to update ${examType.toUpperCase()} record`);
+    }
+
+    return await response.json();
+  }
 };

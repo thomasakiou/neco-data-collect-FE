@@ -182,7 +182,7 @@ const Admin: React.FC = () => {
                 <tbody>
                   {users.map((user) => (
                     <tr key={user.email}>
-                      <td style={{ fontWeight: 600 }}>{user.email}</td>
+                      <td style={{ fontWeight: 600, textTransform: 'lowercase' }}>{user.email}</td>
                       <td>{user.state_name}</td>
                       <td><code>{user.state_code}</code></td>
                       <td>
