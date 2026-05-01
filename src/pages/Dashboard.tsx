@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { LogOut, MapPin, School as SchoolIcon, Edit3, Filter, Key, FileSpreadsheet, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
-import { authService, dataService, type DataRecord, type ExamType } from '../services/api.service';
+import { authService, dataService, lgaService, type DataRecord, type ExamType } from '../services/api.service';
 import EditRecordModal from '../components/EditRecordModal';
 
 const Dashboard: React.FC = () => {
@@ -12,6 +12,7 @@ const Dashboard: React.FC = () => {
   const [editingRecord, setEditingRecord] = useState<DataRecord | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [lgas, setLgas] = useState<string[]>([]);
 
   const navigate = useNavigate();
 
@@ -42,8 +43,22 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const fetchLgas = async () => {
+    try {
+      const allLgas = await lgaService.listLGAs(0, 5000);
+      const filtered = allLgas
+        .filter(l => l.state_name.toUpperCase() === stateName)
+        .map(l => l.lga_name)
+        .sort();
+      setLgas(filtered);
+    } catch (err) {
+      console.error('Failed to fetch LGAs:', err);
+    }
+  };
+
   useEffect(() => {
     fetchRecords();
+    fetchLgas();
   }, [examType, stateName]);
 
   const isComplete = (r: DataRecord) => {
@@ -356,6 +371,7 @@ const Dashboard: React.FC = () => {
           record={editingRecord}
           examType={examType}
           custodians={custodians}
+          lgas={lgas}
           onClose={() => setEditingRecord(null)}
           onSuccess={() => {
             setEditingRecord(null);

@@ -5,7 +5,7 @@ import {
   ArrowLeft, Database, ChevronDown, ChevronLeft, ChevronRight, X, AlertTriangle, 
   FileSpreadsheet, LogOut, Key, Users, Edit3
 } from 'lucide-react';
-import { authService, dataService, type DataRecord, type ExamType } from '../services/api.service';
+import { authService, dataService, lgaService, type DataRecord, type ExamType, type LGARecord } from '../services/api.service';
 import EditRecordModal from '../components/EditRecordModal.tsx';
 
 const DataManagement: React.FC = () => {
@@ -21,6 +21,7 @@ const DataManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [editingRecord, setEditingRecord] = useState<DataRecord | null>(null);
+  const [allLgas, setAllLgas] = useState<LGARecord[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -37,7 +38,17 @@ const DataManagement: React.FC = () => {
       return;
     }
     fetchRecords();
+    fetchLgas();
   }, [examType, navigate]);
+
+  const fetchLgas = async () => {
+    try {
+      const data = await lgaService.listLGAs(0, 10000);
+      setAllLgas(data);
+    } catch (err) {
+      console.error('Failed to fetch LGAs:', err);
+    }
+  };
 
   const fetchRecords = async () => {
     setLoading(true);
@@ -659,6 +670,11 @@ const DataManagement: React.FC = () => {
         <EditRecordModal 
           record={editingRecord}
           examType={examType}
+          lgas={allLgas
+            .filter(l => l.state_name.toUpperCase() === editingRecord.state_name.toUpperCase())
+            .map(l => l.lga_name)
+            .sort()
+          }
           onClose={() => setEditingRecord(null)}
           onSuccess={() => {
             setEditingRecord(null);

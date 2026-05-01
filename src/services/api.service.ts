@@ -299,3 +299,125 @@ export const dataService = {
     return await response.json();
   }
 };
+
+// ─── LGA Service ───────────────────────────────────────────────────
+
+export interface LGARecord {
+  id: number;
+  state_name: string;
+  state_code: string;
+  lga_name: string;
+}
+
+export const lgaService = {
+  async listLGAs(skip = 0, limit = 1000): Promise<LGARecord[]> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${BASE_URL}/lga/?skip=${skip}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch LGAs');
+    }
+
+    return await response.json();
+  },
+
+  async createLGA(data: Omit<LGARecord, 'id'>): Promise<LGARecord> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${BASE_URL}/lga/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to create LGA');
+    }
+
+    return await response.json();
+  },
+
+  async updateLGA(id: number, data: Partial<Omit<LGARecord, 'id'>>): Promise<LGARecord> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${BASE_URL}/lga/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to update LGA');
+    }
+
+    return await response.json();
+  },
+
+  async deleteLGA(id: number) {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${BASE_URL}/lga/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to delete LGA');
+    }
+
+    return await response.json();
+  },
+
+  async bulkDeleteLGAs(ids: number[]) {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${BASE_URL}/lga/bulk-delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ids }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to bulk delete LGAs');
+    }
+
+    return await response.json();
+  },
+
+  async uploadLGAsCSV(file: File) {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${BASE_URL}/lga/upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to upload LGA CSV');
+    }
+
+    return await response.json();
+  }
+};

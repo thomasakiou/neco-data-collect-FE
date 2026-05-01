@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard.tsx';
 import Admin from './pages/Admin.tsx';
 import ChangePassword from './pages/ChangePassword.tsx';
 import DataManagement from './pages/DataManagement.tsx';
+import LgaManagement from './pages/LgaManagement.tsx';
 import './index.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/data" element={<DataManagement />} />
+        <Route path="/admin/lgas" element={<LgaManagement />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>

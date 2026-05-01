@@ -12,11 +12,12 @@ interface EditRecordModalProps {
   record: DataRecord;
   examType: ExamType;
   custodians?: CustodianInfo[];
+  lgas?: string[];
   onClose: () => void;
   onSuccess: () => void;
 }
 
-const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, custodians, onClose, onSuccess }) => {
+const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, custodians, lgas, onClose, onSuccess }) => {
   const [formData, setFormData] = useState<Partial<DataRecord>>({
     state_code: record.state_code,
     state_name: record.state_name,
@@ -173,7 +174,14 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
             </div>
             <div className="form-group">
               <label className="form-label">LGA</label>
-              <input type="text" name="lga" className="form-control" value={formData.lga || ''} onChange={handleChange} required={!isAdmin} />
+              {lgas && lgas.length > 0 ? (
+                <select name="lga" className="form-control" value={formData.lga || ''} onChange={handleChange} required={!isAdmin}>
+                  <option value="">Select LGA</option>
+                  {lgas.map(l => <option key={l} value={l}>{l}</option>)}
+                </select>
+              ) : (
+                <input type="text" name="lga" className="form-control" value={formData.lga || ''} onChange={handleChange} required={!isAdmin} />
+              )}
             </div>
 
             <div className="form-group">
