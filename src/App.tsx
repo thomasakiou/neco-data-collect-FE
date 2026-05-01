@@ -3,6 +3,7 @@ import Login from './pages/Login.tsx';
 import Dashboard from './pages/Dashboard.tsx';
 import Admin from './pages/Admin.tsx';
 import ChangePassword from './pages/ChangePassword.tsx';
+import DataManagement from './pages/DataManagement.tsx';
 import './index.css';
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/data" element={<DataManagement />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>

@@ -185,3 +185,81 @@ export const authService = {
     return await response.json();
   }
 };
+
+// ─── Data Service (SSCE & BECE) ────────────────────────────────────
+
+export interface DataRecord {
+  id: number;
+  state_code: string;
+  state_name: string;
+  sch_num: string;
+  sch_name: string;
+  cust_code: string;
+  cust_name: string;
+  cust_town: string;
+  status: string | null;
+  type: string | null;
+  category: string | null;
+  accd_year: string | null;
+  lga: string | null;
+}
+
+export type ExamType = 'ssce' | 'bece';
+
+export const dataService = {
+  async uploadCSV(examType: ExamType, file: File) {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${BASE_URL}/${examType}/upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Failed to upload ${examType.toUpperCase()} CSV`);
+    }
+
+    return await response.json();
+  },
+
+  async listRecords(examType: ExamType, skip = 0, limit = 10000): Promise<DataRecord[]> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${BASE_URL}/${examType}/?skip=${skip}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${examType.toUpperCase()} records`);
+    }
+
+    return await response.json();
+  },
+
+  async bulkDelete(examType: ExamType, ids: number[]) {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${BASE_URL}/${examType}/bulk-delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ids }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Failed to delete ${examType.toUpperCase()} records`);
+    }
+
+    return await response.json();
+  },
+};

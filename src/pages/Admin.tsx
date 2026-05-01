@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { RefreshCw, Users, Key, AlertTriangle, ArrowLeft, UserPlus, LogOut, Trash2, Edit3 } from 'lucide-react';
+import { RefreshCw, Users, Key, AlertTriangle, ArrowLeft, UserPlus, LogOut, Trash2, Edit3, Database } from 'lucide-react';
 import { authService } from '../services/api.service';
 import CreateUserModal from '../components/CreateUserModal.tsx';
 import EditUserModal from '../components/EditUserModal.tsx';
@@ -111,6 +111,33 @@ const Admin: React.FC = () => {
       </header>
 
       <main className="container" style={{ flex: 1, padding: '2rem 0' }}>
+        {/* Quick Navigation */}
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+          <Link to="/admin/data" style={{ textDecoration: 'none', flex: 1, minWidth: '250px' }}>
+            <div className="card" style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              cursor: 'pointer',
+              transition: 'var(--transition)',
+              border: '2px solid var(--border-color)',
+            }}>
+              <div style={{
+                padding: '0.75rem',
+                background: 'var(--accent)',
+                borderRadius: 'var(--radius-md)',
+                color: 'var(--primary)'
+              }}>
+                <Database size={28} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-main)' }}>Data Management</h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>Upload CSV, filter &amp; download SSCE/BECE data</p>
+              </div>
+            </div>
+          </Link>
+        </div>
+
         <div className="card animate-fade-in" style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
