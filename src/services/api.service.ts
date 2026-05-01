@@ -1,4 +1,4 @@
-const BASE_URL = (import.meta.env.VITE_API_URL || '/data-app') + '/api/v1';
+const BASE_URL = (import.meta.env.VITE_API_URL || 'https://vmi2848672.contaboserver.net/data-app') + '/api/v1';
 
 export interface LoginResponse {
   access_token: string;
