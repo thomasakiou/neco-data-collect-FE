@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Settings, RefreshCw, Users, Key, AlertTriangle, ArrowLeft, UserPlus, LogOut, Trash2, Edit3 } from 'lucide-react';
+import { RefreshCw, Users, Key, AlertTriangle, ArrowLeft, UserPlus, LogOut, Trash2, Edit3 } from 'lucide-react';
 import { authService } from '../services/api.service';
 import CreateUserModal from '../components/CreateUserModal.tsx';
 import EditUserModal from '../components/EditUserModal.tsx';

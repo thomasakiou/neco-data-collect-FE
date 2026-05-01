@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Key, Save, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { Key, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { authService } from '../services/api.service';
 
 const ChangePassword: React.FC = () => {

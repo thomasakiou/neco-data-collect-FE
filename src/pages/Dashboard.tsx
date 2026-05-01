@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LogOut, MapPin, School as SchoolIcon, Edit3, Filter, Settings, Key } from 'lucide-react';
+import { LogOut, MapPin, School as SchoolIcon, Edit3, Filter, Key } from 'lucide-react';
 import { CUSTODIANS, SCHOOLS, type School } from '../data/mockData';
 import EditSchoolModal from '../components/EditSchoolModal.tsx';
 import { authService } from '../services/api.service';
