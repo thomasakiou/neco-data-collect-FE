@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   Upload, Download, Filter, Search, Trash2, RefreshCw, 
-  ArrowLeft, Database, ChevronDown, X, AlertTriangle, 
-  FileSpreadsheet, LogOut, Key
+  ArrowLeft, Database, ChevronDown, ChevronLeft, ChevronRight, X, AlertTriangle, 
+  FileSpreadsheet, LogOut, Key, Users
 } from 'lucide-react';
 import { authService, dataService, type DataRecord, type ExamType } from '../services/api.service';
 
@@ -17,6 +17,8 @@ const DataManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -85,6 +87,18 @@ const DataManagement: React.FC = () => {
   }, [records, filterState, filterCustodian, filterType, filterStatus, filterCategory, filterLga, searchTerm]);
 
   const activeFilterCount = [filterState, filterCustodian, filterType, filterStatus, filterCategory, filterLga].filter(Boolean).length;
+
+  // Pagination
+  const totalPages = Math.ceil(filteredRecords.length / rowsPerPage);
+  const paginatedRecords = useMemo(() => {
+    const start = (currentPage - 1) * rowsPerPage;
+    return filteredRecords.slice(start, start + rowsPerPage);
+  }, [filteredRecords, currentPage, rowsPerPage]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterState, filterCustodian, filterType, filterStatus, filterCategory, filterLga, searchTerm, rowsPerPage]);
 
   const clearFilters = () => {
     setFilterState('');
@@ -189,10 +203,10 @@ const DataManagement: React.FC = () => {
   };
 
   const toggleSelectAll = () => {
-    if (selectedIds.size === filteredRecords.length) {
+    if (selectedIds.size === paginatedRecords.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(filteredRecords.map(r => r.id)));
+      setSelectedIds(new Set(paginatedRecords.map(r => r.id)));
     }
   };
 
@@ -218,6 +232,10 @@ const DataManagement: React.FC = () => {
           <div style={{ height: '20px', width: '1px', background: 'var(--border-color)' }}></div>
           <Database size={20} color="var(--primary)" />
           <h1 style={{ fontSize: '1.25rem', margin: 0 }}>Data Management</h1>
+          <div style={{ height: '20px', width: '1px', background: 'var(--border-color)' }}></div>
+          <Link to="/admin" style={{ color: 'var(--primary)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <Users size={16} /> User Management
+          </Link>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
           <Link to="/change-password" title="Change My Password" style={{ color: 'var(--text-muted)' }}>
@@ -267,7 +285,22 @@ const DataManagement: React.FC = () => {
               </span>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              {/* Rows per page */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)', marginRight: '0.5rem' }}>
+                <span>Rows:</span>
+                <select
+                  className="form-control"
+                  style={{ width: 'auto', padding: '0.35rem 0.5rem', fontSize: '0.85rem' }}
+                  value={rowsPerPage}
+                  onChange={e => setRowsPerPage(Number(e.target.value))}
+                >
+                  {[10, 25, 50, 100, 250, 500].map(n => (
+                    <option key={n} value={n}>{n}</option>
+                  ))}
+                </select>
+              </div>
+
               {/* Upload */}
               <input
                 ref={fileInputRef}
@@ -435,14 +468,15 @@ const DataManagement: React.FC = () => {
               <p style={{ color: 'var(--text-muted)' }}>Loading {examType.toUpperCase()} records...</p>
             </div>
           ) : (
-            <div className="table-container">
+            <>
+              <div className="table-container">
               <table>
                 <thead>
                   <tr>
                     <th style={{ width: '40px' }}>
                       <input
                         type="checkbox"
-                        checked={filteredRecords.length > 0 && selectedIds.size === filteredRecords.length}
+                        checked={paginatedRecords.length > 0 && selectedIds.size === paginatedRecords.length}
                         onChange={toggleSelectAll}
                         style={{ cursor: 'pointer' }}
                       />
@@ -458,7 +492,7 @@ const DataManagement: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredRecords.map((record, index) => (
+                  {paginatedRecords.map((record, index) => (
                     <tr key={record.id} style={{ background: selectedIds.has(record.id) ? '#eff6ff' : undefined }}>
                       <td>
                         <input
@@ -468,7 +502,7 @@ const DataManagement: React.FC = () => {
                           style={{ cursor: 'pointer' }}
                         />
                       </td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{index + 1}</td>
+                      <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{(currentPage - 1) * rowsPerPage + index + 1}</td>
                       <td>
                         <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{record.state_name}</div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{record.state_code}</div>
@@ -526,6 +560,75 @@ const DataManagement: React.FC = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination Controls */}
+            {filteredRecords.length > 0 && (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                padding: '1rem 0',
+                flexWrap: 'wrap',
+                gap: '1rem',
+                marginTop: '0.5rem'
+              }}>
+                {/* Page info & navigation */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    {((currentPage - 1) * rowsPerPage + 1).toLocaleString()}–{Math.min(currentPage * rowsPerPage, filteredRecords.length).toLocaleString()} of {filteredRecords.length.toLocaleString()}
+                  </span>
+                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                    <button
+                      className="btn btn-outline"
+                      style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem' }}
+                      onClick={() => setCurrentPage(1)}
+                      disabled={currentPage === 1}
+                      title="First page"
+                    >
+                      First
+                    </button>
+                    <button
+                      className="btn btn-outline"
+                      style={{ padding: '0.35rem 0.5rem' }}
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      title="Previous page"
+                    >
+                      <ChevronLeft size={16} />
+                    </button>
+                    <span style={{
+                      padding: '0.35rem 0.75rem',
+                      background: 'var(--accent)',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      color: 'var(--primary-dark)'
+                    }}>
+                      {currentPage} / {totalPages}
+                    </span>
+                    <button
+                      className="btn btn-outline"
+                      style={{ padding: '0.35rem 0.5rem' }}
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      title="Next page"
+                    >
+                      <ChevronRight size={16} />
+                    </button>
+                    <button
+                      className="btn btn-outline"
+                      style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem' }}
+                      onClick={() => setCurrentPage(totalPages)}
+                      disabled={currentPage === totalPages}
+                      title="Last page"
+                    >
+                      Last
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            </>
           )}
         </div>
       </main>
