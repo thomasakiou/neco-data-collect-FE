@@ -72,11 +72,13 @@ const Dashboard: React.FC = () => {
 
   const custodians = useMemo(() => {
     const map = new Map<string, {name: string, code: string, town: string}>();
-    activeRecords.forEach(r => {
+    // Optimization: only process activeRecords once
+    for (let i = 0; i < activeRecords.length; i++) {
+      const r = activeRecords[i];
       if (r.cust_name && r.cust_name.trim() !== '' && !map.has(r.cust_name)) {
         map.set(r.cust_name, { name: r.cust_name, code: r.cust_code || '', town: r.cust_town || '' });
       }
-    });
+    }
     return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
   }, [activeRecords]);
 

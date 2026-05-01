@@ -206,8 +206,21 @@ export interface DataRecord {
 
 export type ExamType = 'ssce' | 'bece';
 
+const _recordsCache: Record<string, {data: DataRecord[], time: number}> = {};
+
 export const dataService = {
+  _clearCache(examType?: ExamType) {
+    if (examType) {
+      Object.keys(_recordsCache).forEach(key => {
+        if (key.startsWith(examType)) delete _recordsCache[key];
+      });
+    } else {
+      Object.keys(_recordsCache).forEach(key => delete _recordsCache[key]);
+    }
+  },
+
   async uploadCSV(examType: ExamType, file: File) {
+    this._clearCache(examType);
     const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append('file', file);
@@ -229,6 +242,11 @@ export const dataService = {
   },
 
   async listRecords(examType: ExamType, skip = 0, limit = 1000000): Promise<DataRecord[]> {
+    const cacheKey = `${examType}_${skip}_${limit}`;
+    if (_recordsCache[cacheKey] && (Date.now() - _recordsCache[cacheKey].time) < 60000) { // 1 min cache
+      return _recordsCache[cacheKey].data;
+    }
+
     const token = localStorage.getItem('token');
     const response = await fetch(`${BASE_URL}/${examType}/?skip=${skip}&limit=${limit}`, {
       method: 'GET',
@@ -241,10 +259,13 @@ export const dataService = {
       throw new Error(`Failed to fetch ${examType.toUpperCase()} records`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    _recordsCache[cacheKey] = { data, time: Date.now() };
+    return data;
   },
 
   async bulkDelete(examType: ExamType, ids: number[]) {
+    this._clearCache(examType);
     const token = localStorage.getItem('token');
     const response = await fetch(`${BASE_URL}/${examType}/bulk-delete`, {
       method: 'POST',
@@ -264,6 +285,7 @@ export const dataService = {
   },
 
   async deleteRecord(examType: ExamType, id: number) {
+    this._clearCache(examType);
     const token = localStorage.getItem('token');
     const response = await fetch(`${BASE_URL}/${examType}/${id}`, {
       method: 'DELETE',
@@ -281,6 +303,7 @@ export const dataService = {
   },
 
   async updateRecord(examType: ExamType, id: number, data: Partial<DataRecord>) {
+    this._clearCache(examType);
     const token = localStorage.getItem('token');
     const response = await fetch(`${BASE_URL}/${examType}/${id}`, {
       method: 'PUT',
@@ -311,6 +334,16 @@ export interface LGARecord {
 
 export const lgaService = {
   async listLGAs(skip = 0, limit = 1000): Promise<LGARecord[]> {
+    // Check cache first
+    const cacheKey = `lgas_${skip}_${limit}`;
+    const cachedData = localStorage.getItem(cacheKey);
+    const cacheTime = localStorage.getItem(`${cacheKey}_time`);
+    
+    // Cache for 1 hour (3600000 ms)
+    if (cachedData && cacheTime && (Date.now() - parseInt(cacheTime)) < 3600000) {
+      return JSON.parse(cachedData);
+    }
+
     const token = localStorage.getItem('token');
     const response = await fetch(`${BASE_URL}/lga/?skip=${skip}&limit=${limit}`, {
       method: 'GET',
@@ -323,7 +356,13 @@ export const lgaService = {
       throw new Error('Failed to fetch LGAs');
     }
 
-    return await response.json();
+    const data = await response.json();
+    
+    // Update cache
+    localStorage.setItem(cacheKey, JSON.stringify(data));
+    localStorage.setItem(`${cacheKey}_time`, Date.now().toString());
+    
+    return data;
   },
 
   async createLGA(data: Omit<LGARecord, 'id'>): Promise<LGARecord> {

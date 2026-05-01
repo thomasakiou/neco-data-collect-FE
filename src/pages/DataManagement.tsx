@@ -16,6 +16,7 @@ const DataManagement: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,6 +76,7 @@ const DataManagement: React.FC = () => {
 
   // Apply filters & search
   const filteredRecords = useMemo(() => {
+    const term = debouncedSearchTerm.toLowerCase();
     return records.filter(r => {
       if (filterState && r.state_name !== filterState) return false;
       if (filterCustodian === '__UNASSIGNED__') {
@@ -85,20 +87,20 @@ const DataManagement: React.FC = () => {
       if (filterType && r.type !== filterType) return false;
       if (filterCategory && r.category !== filterCategory) return false;
       if (filterLga && r.lga !== filterLga) return false;
-      if (searchTerm) {
-        const term = searchTerm.toLowerCase();
+      
+      if (term) {
         return (
           r.sch_name.toLowerCase().includes(term) ||
           r.sch_num.toLowerCase().includes(term) ||
-          r.cust_name.toLowerCase().includes(term) ||
-          r.cust_code.toLowerCase().includes(term) ||
+          (r.cust_name && r.cust_name.toLowerCase().includes(term)) ||
+          (r.cust_code && r.cust_code.toLowerCase().includes(term)) ||
           r.state_name.toLowerCase().includes(term) ||
           (r.lga && r.lga.toLowerCase().includes(term))
         );
       }
       return true;
     });
-  }, [records, filterState, filterCustodian, filterType, filterCategory, filterLga, searchTerm]);
+  }, [records, filterState, filterCustodian, filterType, filterCategory, filterLga, debouncedSearchTerm]);
 
   const activeFilterCount = [filterState, filterCustodian, filterType, filterCategory, filterLga].filter(Boolean).length;
 
@@ -141,6 +143,14 @@ const DataManagement: React.FC = () => {
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Download CSV of filtered data
   const handleDownload = () => {
