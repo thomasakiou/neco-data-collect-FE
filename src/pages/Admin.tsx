@@ -212,42 +212,44 @@ const Admin: React.FC = () => {
                       <td><code>{user.state_code}</code></td>
                       <td>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
-                          <button 
-                            className="btn btn-outline" 
-                            style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem' }}
-                            onClick={() => handleResetPassword(user.email)}
-                            disabled={resettingEmail === user.email || deletingEmail === user.email}
-                            title="Reset Password"
-                          >
-                            <RefreshCw size={14} className={resettingEmail === user.email ? 'animate-spin' : ''} />
-                            {resettingEmail === user.email ? 'Resetting...' : 'Reset'}
-                          </button>
-
-                          <button 
-                            className="btn btn-outline" 
-                            style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem', color: 'var(--primary)', borderColor: 'var(--primary)' }}
-                            onClick={() => setEditingUser(user)}
-                            title="Edit User"
-                          >
-                            <Edit3 size={14} />
-                            Edit
-                          </button>
-                          
                           {user.email !== 'thomas.akiou@gmail.com' && (
-                            <button 
-                              className="btn btn-outline" 
-                              style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem', color: '#dc2626', borderColor: '#dc2626' }}
-                              onClick={() => handleDeleteUser(user.email)}
-                              disabled={resettingEmail === user.email || deletingEmail === user.email}
-                              title="Delete User"
-                            >
-                              {deletingEmail === user.email ? (
-                                <RefreshCw size={14} className="animate-spin" />
-                              ) : (
-                                <Trash2 size={14} />
-                              )}
-                              Delete
-                            </button>
+                            <>
+                              <button 
+                                className="btn btn-outline" 
+                                style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem' }}
+                                onClick={() => handleResetPassword(user.email)}
+                                disabled={resettingEmail === user.email || deletingEmail === user.email}
+                                title="Reset Password"
+                              >
+                                <RefreshCw size={14} className={resettingEmail === user.email ? 'animate-spin' : ''} />
+                                {resettingEmail === user.email ? 'Resetting...' : 'Reset'}
+                              </button>
+
+                              <button 
+                                className="btn btn-outline" 
+                                style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem', color: 'var(--primary)', borderColor: 'var(--primary)' }}
+                                onClick={() => setEditingUser(user)}
+                                title="Edit User"
+                              >
+                                <Edit3 size={14} />
+                                Edit
+                              </button>
+                              
+                              <button 
+                                className="btn btn-outline" 
+                                style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem', color: '#dc2626', borderColor: '#dc2626' }}
+                                onClick={() => handleDeleteUser(user.email)}
+                                disabled={resettingEmail === user.email || deletingEmail === user.email}
+                                title="Delete User"
+                              >
+                                {deletingEmail === user.email ? (
+                                  <RefreshCw size={14} className="animate-spin" />
+                                ) : (
+                                  <Trash2 size={14} />
+                                )}
+                                Delete
+                              </button>
+                            </>
                           )}
                         </div>
                       </td>
