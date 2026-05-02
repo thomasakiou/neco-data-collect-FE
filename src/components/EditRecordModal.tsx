@@ -216,7 +216,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
             </div>
             <div className="form-group">
               <label className="form-label">School Email</label>
-              <input type="email" name="sch_email" className="form-control" value={formData.sch_email} onChange={handleChange} required={!isAdmin} />
+              <input type="email" name="sch_email" className="form-control" value={formData.sch_email ?? ''} onChange={handleChange} required={!isAdmin} />
             </div>
           </div>
 
