@@ -56,6 +56,7 @@ const DataManagement: React.FC = () => {
     setSelectedIds(new Set());
     try {
       const data = await dataService.listRecords(examType);
+      console.log('DEBUG: Fetched records sample:', JSON.stringify(data.slice(0, 3)));
       setRecords(data);
     } catch (err: any) {
       setMessage({ type: 'error', text: err.message });
@@ -67,12 +68,29 @@ const DataManagement: React.FC = () => {
   // Derive unique filter values from data
   const filterOptions = useMemo(() => {
     const states = [...new Set(records.map(r => r.state_name).filter(Boolean))].sort();
-    const custodians = [...new Set(records.map(r => r.cust_name).filter(Boolean))].sort();
-    const types = [...new Set(records.map(r => r.type).filter(Boolean) as string[])].sort();
-    const categories = [...new Set(records.map(r => r.category).filter(Boolean) as string[])].sort();
-    const lgas = [...new Set(records.map(r => r.lga).filter(Boolean) as string[])].sort();
+    
+    // Filter records by selected state for other dropdowns
+    const stateFilteredRecords = filterState 
+      ? records.filter(r => r.state_name === filterState)
+      : records;
+
+    const custodians = [...new Set(stateFilteredRecords.map(r => r.cust_name).filter(Boolean))].sort();
+    
+    // Use fixed options for Type and Category as fallbacks
+    const typesFound = [...new Set(stateFilteredRecords.map(r => r.type).filter(Boolean) as string[])];
+    const types = (typesFound.length > 0 ? typesFound : ['BOYS', 'GIRLS', 'MIXED']).sort();
+    
+    const categoriesFound = [...new Set(stateFilteredRecords.map(r => r.category).filter(Boolean) as string[])];
+    const categories = (categoriesFound.length > 0 ? categoriesFound : ['PRIVATE', 'PUBLIC', 'FEDERAL']).sort();
+    
+    // Use allLgas state for LGA filter to ensure it's always populated
+    const stateLgas = filterState
+      ? allLgas.filter(l => l.state_name.toUpperCase() === filterState.toUpperCase()).map(l => l.lga_name)
+      : allLgas.map(l => l.lga_name);
+    const lgas = [...new Set(stateLgas)].sort();
+    
     return { states, custodians, types, categories, lgas };
-  }, [records]);
+  }, [records, filterState, allLgas]);
 
   // Apply filters & search
   const filteredRecords = useMemo(() => {
@@ -101,6 +119,19 @@ const DataManagement: React.FC = () => {
       return true;
     });
   }, [records, filterState, filterCustodian, filterType, filterCategory, filterLga, debouncedSearchTerm]);
+  
+  const completionStats = useMemo(() => {
+    const total = filteredRecords.length;
+    const complete = filteredRecords.filter(r => 
+      r.type && r.type.trim() !== '' &&
+      r.category && r.category.trim() !== '' &&
+      r.lga && r.lga.trim() !== '' &&
+      r.accd_year && r.accd_year.trim() !== '' &&
+      r.sch_email && r.sch_email.trim() !== ''
+    ).length;
+    const percentage = total > 0 ? Math.round((complete / total) * 100) : 0;
+    return { complete, total, percentage };
+  }, [filteredRecords]);
 
   const activeFilterCount = [filterState, filterCustodian, filterType, filterCategory, filterLga].filter(Boolean).length;
 
@@ -115,6 +146,12 @@ const DataManagement: React.FC = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [filterState, filterCustodian, filterType, filterCategory, filterLga, searchTerm, rowsPerPage]);
+
+  // Clear dependent filters when state changes
+  useEffect(() => {
+    setFilterCustodian('');
+    setFilterLga('');
+  }, [filterState]);
 
   const clearFilters = () => {
     setFilterState('');
@@ -156,7 +193,7 @@ const DataManagement: React.FC = () => {
   const handleDownload = () => {
     if (filteredRecords.length === 0) return;
 
-    const headers = ['S/N', 'State Code', 'State Name', 'Sch Num', 'Sch Name', 'Cust Code', 'Cust Name', 'Cust Town', 'Type', 'Category', 'Date', 'LGA'];
+    const headers = ['S/N', 'State Code', 'State Name', 'Sch Num', 'Sch Name', 'Sch Email', 'Cust Code', 'Cust Name', 'Cust Town', 'Type', 'Category', 'Date', 'LGA'];
     const csvRows = [headers.join(',')];
 
     filteredRecords.forEach((r, i) => {
@@ -166,6 +203,7 @@ const DataManagement: React.FC = () => {
         `"${r.state_name}"`,
         `"${r.sch_num}"`,
         `"${r.sch_name}"`,
+        `"${r.sch_email?.toLowerCase() || ''}"`,
         `"${r.cust_code}"`,
         `"${r.cust_name}"`,
         `"${r.cust_town}"`,
@@ -307,6 +345,54 @@ const DataManagement: React.FC = () => {
               {t.toUpperCase()}
             </button>
           ))}
+        </div>
+
+        {/* Completion Progress Card */}
+        <div className="card animate-fade-in" style={{ 
+          marginBottom: '1.5rem', 
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+          border: '1px solid var(--border-color)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '1.25rem 1.5rem',
+          boxShadow: 'var(--shadow-sm)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ 
+              background: 'var(--accent)', 
+              color: 'var(--primary)', 
+              padding: '0.75rem', 
+              borderRadius: 'var(--radius-md)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Database size={24} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1rem', margin: 0, color: 'var(--text-main)' }}>School Data Completion</h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
+                {completionStats.complete.toLocaleString()} of {completionStats.total.toLocaleString()} schools filtered have complete data fields
+              </p>
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem', minWidth: '200px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '0.85rem', fontWeight: 600 }}>
+              <span style={{ color: 'var(--primary)' }}>{completionStats.percentage}% Complete</span>
+              <span style={{ color: 'var(--text-muted)' }}>({completionStats.complete}/{completionStats.total})</span>
+            </div>
+            <div style={{ width: '100%', height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{ 
+                width: `${completionStats.percentage}%`, 
+                height: '100%', 
+                background: 'var(--primary)', 
+                transition: 'width 0.5s ease-out',
+                borderRadius: '4px'
+              }} />
+            </div>
+          </div>
         </div>
 
         <div className="card animate-fade-in" style={{ marginBottom: '2rem' }}>
@@ -524,6 +610,7 @@ const DataManagement: React.FC = () => {
                     <th>Category</th>
                     <th>LGA</th>
                     <th>Date</th>
+                    <th>Email</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -568,6 +655,7 @@ const DataManagement: React.FC = () => {
                       <td style={{ fontSize: '0.85rem' }}>{record.category || '—'}</td>
                       <td style={{ fontSize: '0.85rem' }}>{record.lga || '—'}</td>
                       <td style={{ fontSize: '0.85rem' }}>{record.accd_year || '—'}</td>
+                      <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{record.sch_email?.toLowerCase() || '—'}</td>
                       <td>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                           <button 

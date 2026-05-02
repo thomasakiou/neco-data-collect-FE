@@ -36,7 +36,13 @@ const LgaManagement: React.FC = () => {
     setSelectedIds(new Set());
     try {
       const data = await lgaService.listLGAs(0, 10000);
-      setLgas(data);
+      // Sort by state_code (ascending) and then lga_name (ascending)
+      const sortedData = [...data].sort((a, b) => {
+        const stateCompare = a.state_code.localeCompare(b.state_code);
+        if (stateCompare !== 0) return stateCompare;
+        return a.lga_name.localeCompare(b.lga_name);
+      });
+      setLgas(sortedData);
     } catch (err: any) {
       setMessage({ type: 'error', text: err.message });
     } finally {

@@ -63,7 +63,7 @@ const Dashboard: React.FC = () => {
 
   const isComplete = (r: DataRecord) => {
     const check = (val: string | null | undefined) => !!val && val.trim() !== '';
-    return check(r.state_name) && check(r.state_code) && check(r.sch_num) && check(r.sch_name) && check(r.cust_name) && check(r.cust_code) && check(r.cust_town) && check(r.lga) && check(r.type) && check(r.category) && check(r.accd_year);
+    return check(r.state_name) && check(r.state_code) && check(r.sch_num) && check(r.sch_name) && check(r.cust_name) && check(r.cust_code) && check(r.cust_town) && check(r.lga) && check(r.type) && check(r.category) && check(r.accd_year) && check(r.sch_email);
   };
 
   const activeRecords = useMemo(() => {

@@ -33,7 +33,9 @@ const Admin: React.FC = () => {
   const fetchUsers = async () => {
     try {
       const data = await authService.listUsers();
-      setUsers(data);
+      // Sort users by state_code (ascending)
+      const sortedUsers = [...data].sort((a, b) => a.state_code.localeCompare(b.state_code));
+      setUsers(sortedUsers);
     } catch (err) {
       console.error(err);
     } finally {

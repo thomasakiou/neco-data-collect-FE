@@ -202,6 +202,7 @@ export interface DataRecord {
   category: string | null;
   accd_year: string | null;
   lga: string | null;
+  sch_email: string | null;
 }
 
 export type ExamType = 'ssce' | 'bece';
