@@ -655,7 +655,7 @@ const DataManagement: React.FC = () => {
                       <td style={{ fontSize: '0.85rem' }}>{record.category || '—'}</td>
                       <td style={{ fontSize: '0.85rem' }}>{record.lga || '—'}</td>
                       <td style={{ fontSize: '0.85rem' }}>{record.accd_year || '—'}</td>
-                      <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{record.sch_email?.toLowerCase() || '—'}</td>
+                      <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'lowercase' }}>{record.sch_email?.toLowerCase() || '—'}</td>
                       <td>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                           <button 
