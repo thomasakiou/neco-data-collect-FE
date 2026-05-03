@@ -246,7 +246,7 @@ export const dataService = {
 
   async listRecords(examType: ExamType, skip = 0, limit = 1000000): Promise<DataRecord[]> {
     const cacheKey = `${examType}_${skip}_${limit}`;
-    if (_recordsCache[cacheKey] && (Date.now() - _recordsCache[cacheKey].time) < 60000) { // 1 min cache
+    if (_recordsCache[cacheKey] && (Date.now() - _recordsCache[cacheKey].time) < 300000) { // 5 min cache
       return _recordsCache[cacheKey].data;
     }
 
@@ -337,6 +337,15 @@ export interface LGARecord {
 }
 
 export const lgaService = {
+  _clearCache() {
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('lgas_')) {
+        localStorage.removeItem(key);
+        localStorage.removeItem(`${key}_time`);
+      }
+    });
+  },
+
   async listLGAs(skip = 0, limit = 1000): Promise<LGARecord[]> {
     // Check cache first
     const cacheKey = `lgas_${skip}_${limit}`;
@@ -370,6 +379,7 @@ export const lgaService = {
   },
 
   async createLGA(data: Omit<LGARecord, 'id'>): Promise<LGARecord> {
+    this._clearCache();
     const token = localStorage.getItem('token');
     const response = await fetch(`${BASE_URL}/lga/`, {
       method: 'POST',
@@ -389,6 +399,7 @@ export const lgaService = {
   },
 
   async updateLGA(id: number, data: Partial<Omit<LGARecord, 'id'>>): Promise<LGARecord> {
+    this._clearCache();
     const token = localStorage.getItem('token');
     const response = await fetch(`${BASE_URL}/lga/${id}`, {
       method: 'PUT',
@@ -408,6 +419,7 @@ export const lgaService = {
   },
 
   async deleteLGA(id: number) {
+    this._clearCache();
     const token = localStorage.getItem('token');
     const response = await fetch(`${BASE_URL}/lga/${id}`, {
       method: 'DELETE',
@@ -425,6 +437,7 @@ export const lgaService = {
   },
 
   async bulkDeleteLGAs(ids: number[]) {
+    this._clearCache();
     const token = localStorage.getItem('token');
     const response = await fetch(`${BASE_URL}/lga/bulk-delete`, {
       method: 'POST',
@@ -444,6 +457,7 @@ export const lgaService = {
   },
 
   async uploadLGAsCSV(file: File) {
+    this._clearCache();
     const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append('file', file);

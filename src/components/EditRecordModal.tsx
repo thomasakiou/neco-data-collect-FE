@@ -59,12 +59,22 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
     }
     
     if (name === 'lga' && lgas) {
-      const found = lgas.find(l => l.lga_name === value);
+      const found = lgas.find(l => {
+        const lName = (l.lga_name || (l as any).lga || (l as any).name || '').toLowerCase();
+        return lName === value.toLowerCase();
+      });
       if (found) {
         setFormData(prev => ({ 
           ...prev, 
-          lga: found.lga_name,
-          lga_code: found.lga_code
+          lga: found.lga_name || (found as any).lga || (found as any).name || value,
+          lga_code: found.lga_code || (found as any).code || ''
+        }));
+        return;
+      } else if (!value) {
+        setFormData(prev => ({ 
+          ...prev, 
+          lga: '',
+          lga_code: ''
         }));
         return;
       }
@@ -189,9 +199,30 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
             <div className="form-group">
               <label className="form-label">LGA</label>
               {lgas && lgas.length > 0 ? (
-                <select name="lga" className="form-control" value={formData.lga || ''} onChange={handleChange} required={!isAdmin}>
-                  <option value="">Select LGA</option>
-                  {lgas.map(l => <option key={l.id} value={l.lga_name}>{l.lga_name}</option>)}
+                <select 
+                  name="lga" 
+                  className="form-control" 
+                  style={{ color: '#1a1a1a', backgroundColor: '#ffffff' }}
+                  value={formData.lga || ''} 
+                  onChange={handleChange} 
+                  required={!isAdmin}
+                >
+                  <option value="" style={{ color: '#1a1a1a' }}>Select LGA</option>
+                  {lgas.map((l, idx) => {
+                    const lName = typeof l === 'string' ? l : (l.lga_name || (l as any).lga || (l as any).name || (l as any).lgaName || '');
+                    const lCode = typeof l === 'string' ? '' : (l.lga_code || (l as any).code || '');
+                    if (idx === 0) console.log('DEBUG LGA Item:', l);
+                    
+                    return (
+                      <option 
+                        key={typeof l === 'string' ? l : l.id} 
+                        value={lName} 
+                        style={{ color: '#1a1a1a' }}
+                      >
+                        {(lName || 'UNNAMED LGA').toUpperCase()} {lCode ? `(${lCode})` : ''}
+                      </option>
+                    );
+                  })}
                 </select>
               ) : (
                 <input type="text" name="lga" className="form-control" value={formData.lga || ''} onChange={handleChange} required={!isAdmin} />

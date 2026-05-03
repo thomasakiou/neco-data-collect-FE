@@ -56,7 +56,7 @@ const LgaManagement: React.FC = () => {
         const term = searchTerm.toLowerCase();
         return (
           l.lga_name.toLowerCase().includes(term) ||
-          l.lga_code.toLowerCase().includes(term) ||
+          (l.lga_code || '').toLowerCase().includes(term) ||
           l.state_name.toLowerCase().includes(term) ||
           l.state_code.toLowerCase().includes(term)
         );

@@ -38,6 +38,11 @@ const DataManagement: React.FC = () => {
       navigate('/login');
       return;
     }
+    // Force clear LGA cache once to ensure new format is fetched
+    if (!localStorage.getItem('lga_cache_fixed_v2')) {
+      lgaService._clearCache();
+      localStorage.setItem('lga_cache_fixed_v2', 'true');
+    }
     fetchRecords();
     fetchLgas();
   }, [examType, navigate]);
@@ -45,6 +50,7 @@ const DataManagement: React.FC = () => {
   const fetchLgas = async () => {
     try {
       const data = await lgaService.listLGAs(0, 10000);
+      console.log(`DEBUG: Fetched ${data.length} total LGAs`);
       setAllLgas(data);
     } catch (err) {
       console.error('Failed to fetch LGAs:', err);
@@ -67,28 +73,42 @@ const DataManagement: React.FC = () => {
 
   // Derive unique filter values from data
   const filterOptions = useMemo(() => {
-    const states = [...new Set(records.map(r => r.state_name).filter(Boolean))].sort();
+    const statesSet = new Set<string>();
+    const custodiansSet = new Set<string>();
+    const typesSet = new Set<string>();
+    const categoriesSet = new Set<string>();
+    const lgasSet = new Set<string>();
 
-    // Filter records by selected state for other dropdowns
-    const stateFilteredRecords = filterState
-      ? records.filter(r => r.state_name === filterState)
-      : records;
+    const filterStateUpper = filterState?.toUpperCase();
 
-    const custodians = [...new Set(stateFilteredRecords.map(r => r.cust_name).filter(Boolean))].sort();
+    // Single pass to gather all filter options
+    records.forEach(r => {
+      if (r.state_name) statesSet.add(r.state_name);
+      
+      const isMatchState = !filterState || r.state_name === filterState;
+      
+      if (isMatchState) {
+        if (r.cust_name) custodiansSet.add(r.cust_name);
+        if (r.type) typesSet.add(r.type);
+        if (r.category) categoriesSet.add(r.category);
+      }
+    });
 
-    // Use fixed options for Type and Category as fallbacks
-    const typesFound = [...new Set(stateFilteredRecords.map(r => r.type).filter(Boolean) as string[])];
-    const types = (typesFound.length > 0 ? typesFound : ['BOYS', 'GIRLS', 'MIXED']).sort();
+    // LGAs come from allLgas state which is already state-filtered in some cases
+    allLgas.forEach(l => {
+      if (!filterState || l.state_name.toUpperCase() === filterStateUpper) {
+        lgasSet.add(l.lga_name);
+      }
+    });
 
-    const categoriesFound = [...new Set(stateFilteredRecords.map(r => r.category).filter(Boolean) as string[])];
-    const categories = (categoriesFound.length > 0 ? categoriesFound : ['PRIVATE', 'PUBLIC', 'FEDERAL']).sort();
-
-    // Use allLgas state for LGA filter to ensure it's always populated
-    const stateLgas = filterState
-      ? allLgas.filter(l => l.state_name.toUpperCase() === filterState.toUpperCase()).map(l => l.lga_name)
-      : allLgas.map(l => l.lga_name);
-    const lgas = [...new Set(stateLgas)].sort();
-
+    const states = Array.from(statesSet).sort();
+    const custodians = Array.from(custodiansSet).sort();
+    const types = Array.from(typesSet).sort();
+    if (types.length === 0) types.push('BOYS', 'GIRLS', 'MIXED');
+    const categories = Array.from(categoriesSet).sort();
+    if (categories.length === 0) categories.push('PRIVATE', 'PUBLIC', 'FEDERAL');
+    const lgas = Array.from(lgasSet).sort();
+    
     return { states, custodians, types, categories, lgas };
   }, [records, filterState, allLgas]);
 
@@ -792,8 +812,18 @@ const DataManagement: React.FC = () => {
           record={editingRecord}
           examType={examType}
           lgas={allLgas
-            .filter(l => l.state_name.toUpperCase() === editingRecord.state_name.toUpperCase())
-            .sort((a, b) => a.lga_name.localeCompare(b.lga_name))
+            .filter(l => {
+              const lCode = (l.state_code || '').replace(/^0+/, '');
+              const rCode = (editingRecord.state_code || '').replace(/^0+/, '');
+              // If we are in the state portal (Admin only sees one state), 
+              // and the filter returns nothing, we might want to be even more relaxed.
+              return lCode === rCode && lCode !== '';
+            })
+            .sort((a, b) => {
+              const an = (a.lga_name || (a as any).lga || (a as any).name || String(a)).toLowerCase();
+              const bn = (b.lga_name || (b as any).lga || (b as any).name || String(b)).toLowerCase();
+              return an.localeCompare(bn);
+            })
           }
           onClose={() => setEditingRecord(null)}
           onSuccess={() => {
