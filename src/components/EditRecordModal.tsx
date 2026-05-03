@@ -12,7 +12,7 @@ interface EditRecordModalProps {
   record: DataRecord;
   examType: ExamType;
   custodians?: CustodianInfo[];
-  lgas?: LGARecord[];
+  lgas?: (LGARecord | string)[];
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -60,14 +60,16 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
     
     if (name === 'lga' && lgas) {
       const found = lgas.find(l => {
-        const lName = (l.lga_name || (l as any).lga || (l as any).name || '').toLowerCase();
-        return lName === value.toLowerCase();
+        const lName = typeof l === 'string' ? l : (l.lga_name || (l as any).lga || (l as any).name || '');
+        return lName.toLowerCase() === value.toLowerCase();
       });
       if (found) {
+        const lName = typeof found === 'string' ? found : (found.lga_name || (found as any).lga || (found as any).name || value);
+        const lCode = typeof found === 'string' ? '' : (found.lga_code || (found as any).code || '');
         setFormData(prev => ({ 
           ...prev, 
-          lga: found.lga_name || (found as any).lga || (found as any).name || value,
-          lga_code: found.lga_code || (found as any).code || ''
+          lga: lName,
+          lga_code: lCode
         }));
         return;
       } else if (!value) {
