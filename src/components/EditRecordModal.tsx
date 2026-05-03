@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Save, RefreshCw } from 'lucide-react';
-import { authService, dataService, type DataRecord, type ExamType } from '../services/api.service';
+import { authService, dataService, type DataRecord, type ExamType, type LGARecord } from '../services/api.service';
 
 export interface CustodianInfo {
   name: string;
@@ -12,7 +12,7 @@ interface EditRecordModalProps {
   record: DataRecord;
   examType: ExamType;
   custodians?: CustodianInfo[];
-  lgas?: string[];
+  lgas?: LGARecord[];
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -31,6 +31,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
     category: record.category || '',
     accd_year: record.accd_year || '',
     lga: record.lga || '',
+    lga_code: record.lga_code || '',
     sch_email: record.sch_email || '',
     accreditation_type: record.accreditation_type || '',
   });
@@ -57,6 +58,18 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
       }
     }
     
+    if (name === 'lga' && lgas) {
+      const found = lgas.find(l => l.lga_name === value);
+      if (found) {
+        setFormData(prev => ({ 
+          ...prev, 
+          lga: found.lga_name,
+          lga_code: found.lga_code
+        }));
+        return;
+      }
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -85,7 +98,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
 
   const isComplete = (data: Partial<DataRecord>) => {
     const check = (val: string | null | undefined) => !!val && val.trim() !== '';
-    return check(data.state_name) && check(data.state_code) && check(data.sch_num) && check(data.sch_name) && check(data.cust_name) && check(data.cust_code) && check(data.cust_town) && check(data.lga) && check(data.type) && check(data.category) && check(data.accd_year) && check(data.sch_email) && check(data.accreditation_type);
+    return check(data.state_name) && check(data.state_code) && check(data.sch_num) && check(data.sch_name) && check(data.cust_name) && check(data.cust_code) && check(data.cust_town) && check(data.lga) && check(data.lga_code) && check(data.type) && check(data.category) && check(data.accd_year) && check(data.sch_email) && check(data.accreditation_type);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -178,7 +191,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
               {lgas && lgas.length > 0 ? (
                 <select name="lga" className="form-control" value={formData.lga || ''} onChange={handleChange} required={!isAdmin}>
                   <option value="">Select LGA</option>
-                  {lgas.map(l => <option key={l} value={l}>{l}</option>)}
+                  {lgas.map(l => <option key={l.id} value={l.lga_name}>{l.lga_name}</option>)}
                 </select>
               ) : (
                 <input type="text" name="lga" className="form-control" value={formData.lga || ''} onChange={handleChange} required={!isAdmin} />

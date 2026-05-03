@@ -1,0 +1,775 @@
+State,state_code,LGA
+Borno,007,Abadam
+FCT,031,Abaji
+Akwa Ibom,003,Abak
+Ebonyi,033,Abakaliki
+Abia,001,Aba North
+Abia,001,Aba South
+Ogun,022,Abeokuta North
+Ogun,022,Abeokuta South
+Cross River,008,Abi
+Imo,012,Aboh Mbaise
+Rivers,027,Abua/Odual
+FCT,031,Abuja
+Kogi,018,Adavi
+Ekiti,034,Ado Ekiti
+Ogun,022,Ado-Odo/Ota
+Oyo,025,Afijio
+Ebonyi,033,Afikpo North
+Ebonyi,033,Afikpo South (Edda)
+Niger,021,Agaie
+Benue,006,Agatu
+Niger,021,Agwara
+Lagos,020,Agege
+Anambra,004,Aguata
+Imo,012,Ahiazu Mbaise
+Rivers,027,Ahoada East
+Rivers,027,Ahoada West
+Kogi,018,Ajaokuta
+Lagos,020,Ajeromi-Ifelodun
+Kano,015,Ajingi
+Cross River,008,Akamkpa
+Oyo,025,Akinyele
+Gombe,035,Akko
+Edo,010,Akoko-Edo
+Ondo,023,Akoko North-East
+Ondo,023,Akoko North-West
+Ondo,023,Akoko South-West
+Ondo,023,Akoko South-East
+Cross River,008,Akpabuyo
+Rivers,027,Akuku-Toru
+Ondo,023,Akure North
+Ondo,023,Akure South
+Nasarawa,036,Akwanga
+Kano,015,Albasu
+Kebbi,017,Aleiro
+Lagos,020,Alimosho
+Bauchi,005,Alkaleri
+Lagos,020,Amuwo-Odofin
+Anambra,004,Anambra East
+Anambra,004,Anambra West
+Anambra,004,Anaocha
+Rivers,027,Andoni
+Enugu,011,Aninri
+Delta,009,Aniocha North
+Delta,009,Aniocha South
+Zamfara,037,Anka
+Kogi,018,Ankpa
+Benue,006,Apa
+Lagos,020,Apapa
+Benue,006,Ado
+Taraba,029,Ardo Kola
+Kebbi,017,Arewa Dandi
+Kebbi,017,Argungu
+Abia,001,Arochukwu
+Kwara,019,Asa
+Rivers,027,Asari-Toru
+Borno,007,Askira/Uba
+Osun,024,Atakunmosa East
+Osun,024,Atakunmosa West
+Oyo,025,Atiba
+Oyo,025,Atisbo
+Kebbi,017,Augie
+Jigawa,013,Auyo
+Nasarawa,036,Awe
+Enugu,011,Awgu
+Anambra,004,Awka North
+Anambra,004,Awka South
+Anambra,004,Ayamelum
+Osun,024,Aiyedaade
+Osun,024,Aiyedire
+Jigawa,013,Babura
+Lagos,020,Badagry
+Kebbi,017,Bagudo
+Kano,015,Bagwai
+Cross River,008,Bakassi
+Plateau,026,Bokkos
+Katsina,016,Bakori
+Zamfara,037,Bakura
+Gombe,035,Balanga
+Taraba,029,Bali
+Borno,007,Bama
+Yobe,030,Bade
+Plateau,026,Barkin Ladi
+Kwara,019,Baruten
+Kogi,018,Bassa
+Plateau,026,Bassa
+Katsina,016,Batagarawa
+Katsina,016,Batsari
+Bauchi,005,Bauchi
+Katsina,016,Baure
+Borno,007,Bayo
+Kano,015,Bebeji
+Cross River,008,Bekwarra
+Abia,001,Bende
+Cross River,008,Biase
+Kano,015,Bichi
+Niger,021,Bida
+Gombe,035,Billiri
+Katsina,016,Bindawa
+Sokoto,028,Binji
+Jigawa,013,Biriniwa
+Kaduna,014,Birnin Gwari
+Kebbi,017,Birnin Kebbi
+Jigawa,013,Birnin Kudu
+Zamfara,037,Birnin Magaji/Kiyaw
+Borno,007,Biu
+Sokoto,028,Bodinga
+Bauchi,005,Bogoro
+Cross River,008,Boki
+Osun,024,Boluwaduro
+Delta,009,Bomadi
+Rivers,027,Bonny
+Niger,021,Borgu
+Osun,024,Boripe
+Yobe,030,Bursari
+Niger,021,Bosso
+Bayelsa,032,Brass
+Jigawa,013,Buji
+Zamfara,037,Bukkuyum
+Benue,006,Buruku
+Zamfara,037,Bungudu
+Kano,015,Bunkure
+Kebbi,017,Bunza
+Delta,009,Burutu
+FCT,031,Bwari
+Cross River,008,Calabar Municipal
+Cross River,008,Calabar South
+Niger,021,Chanchaga
+Katsina,016,Charanchi
+Borno,007,Chibok
+Kaduna,014,Chikun
+Kano,015,Dala
+Yobe,030,Damaturu
+Bauchi,005,Damban
+Kano,015,Dambatta
+Borno,007,Damboa
+Kebbi,017,Dandi
+Katsina,016,Dandume
+Sokoto,028,Dange Shuni
+Katsina,016,Danja
+Katsina,016,Dan Musa
+Bauchi,005,Darazo
+Bauchi,005,Dass
+Katsina,016,Daura
+Kano,015,Dawakin Kudu
+Kano,015,Dawakin Tofa
+Rivers,027,Degema
+Kogi,018,Dekina
+Adamawa,002,Demsa
+Borno,007,Dikwa
+Kano,015,Doguwa
+Nasarawa,036,Doma
+Taraba,029,Donga
+Gombe,035,Dukku
+Anambra,004,Dunukofia
+Jigawa,013,Dutse
+Katsina,016,Dutsi
+Katsina,016,Dutsin Ma
+Akwa Ibom,003,Eastern Obolo
+Ebonyi,033,Ebonyi
+Niger,021,Edati
+Osun,024,Ede North
+Osun,024,Ede South
+Kwara,019,Edu
+Osun,024,Ife Central
+Osun,024,Ife East
+Osun,024,Ife North
+Osun,024,Ife South
+Ekiti,034,Efon
+Ogun,022,Yewa North
+Ogun,022,Yewa South
+Oyo,025,Egbeda
+Osun,024,Egbedore
+Edo,010,Egor
+Imo,012,Ehime Mbano
+Osun,024,Ejigbo
+Bayelsa,032,Ekeremor
+Akwa Ibom,003,Eket
+Kwara,019,Ekiti
+Ekiti,034,Ekiti East
+Ekiti,034,Ekiti South-West
+Ekiti,034,Ekiti West
+Anambra,004,Ekwusigo
+Rivers,027,Eleme
+Rivers,027,Emuoha
+Ekiti,034,Emure
+Enugu,011,Enugu East
+Enugu,011,Enugu North
+Enugu,011,Enugu South
+Lagos,020,Epe
+Edo,010,Esan Central
+Edo,010,Esan North-East
+Edo,010,Esan South-East
+Edo,010,Esan West
+Ondo,023,Ese Odo
+Akwa Ibom,003,Esit Eket
+Akwa Ibom,003,Essien Udim
+Rivers,027,Etche
+Delta,009,Ethiope East
+Delta,009,Ethiope West
+Akwa Ibom,003,Etim Ekpo
+Akwa Ibom,003,Etinan
+Lagos,020,Eti Osa
+Edo,010,Etsako Central
+Edo,010,Etsako East
+Edo,010,Etsako West
+Cross River,008,Etung
+Ogun,022,Ewekoro
+Enugu,011,Ezeagu
+Imo,012,Ezinihitte
+Ebonyi,033,Ezza North
+Ebonyi,033,Ezza South
+Kano,015,Fagge
+Kebbi,017,Fakai
+Katsina,016,Faskari
+Yobe,030,Fika
+Adamawa,002,Fufure
+Gombe,035,Funakaye
+Yobe,030,Fune
+Katsina,016,Funtua
+Kano,015,Gabasawa
+Sokoto,028,Gada
+Jigawa,013,Gagarawa
+Bauchi,005,Gamawa
+Bauchi,005,Ganjuwa
+Adamawa,002,Ganye
+Jigawa,013,Garki
+Kano,015,Garko
+Kano,015,Garun Mallam
+Taraba,029,Gashaka
+Taraba,029,Gassol
+Kano,015,Gaya
+Adamawa,002,Gayuk
+Kano,015,Gezawa
+Niger,021,Gbako
+Benue,006,Gboko
+Ekiti,034,Gbonyin
+Yobe,030,Geidam
+Bauchi,005,Giade
+Kaduna,014,Giwa
+Rivers,027,Gokana
+Gombe,035,Gombe
+Adamawa,002,Gombi
+Sokoto,028,Goronyo
+Adamawa,002,Grie
+Borno,007,Gubio
+Sokoto,028,Gudu
+Yobe,030,Gujba
+Yobe,030,Gulani
+Benue,006,Guma
+Jigawa,013,Gumel
+Zamfara,037,Gummi
+Niger,021,Gurara
+Jigawa,013,Guri
+Zamfara,037,Gusau
+Borno,007,Guzamala
+Sokoto,028,Gwadabawa
+FCT,031,Gwagwalada
+Kano,015,Gwale
+Kebbi,017,Gwandu
+Jigawa,013,Gwaram
+Kano,015,Gwarzo
+Benue,006,Gwer East
+Benue,006,Gwer West
+Jigawa,013,Gwiwa
+Borno,007,Gwoza
+Jigawa,013,Hadejia
+Borno,007,Hawul
+Adamawa,002,Hong
+Oyo,025,Ibadan North
+Oyo,025,Ibadan North-East
+Oyo,025,Ibadan North-West
+Oyo,025,Ibadan South-East
+Oyo,025,Ibadan South-West
+Kogi,018,Ibaji
+Oyo,025,Ibarapa Central
+Oyo,025,Ibarapa East
+Oyo,025,Ibarapa North
+Lagos,020,Ibeju-Lekki
+Akwa Ibom,003,Ibeno
+Akwa Ibom,003,Ibesikpo Asutan
+Taraba,029,Ibi
+Akwa Ibom,003,Ibiono-Ibom
+Kogi,018,Idah
+Ondo,023,Idanre
+Imo,012,Ideato North
+Imo,012,Ideato South
+Anambra,004,Idemili North
+Anambra,004,Idemili South
+Oyo,025,Ido
+Ekiti,034,Ido Osi
+Lagos,020,Ifako-Ijaiye
+Osun,024,Ifedayo
+Ondo,023,Ifedore
+Kwara,019,Ifelodun
+Osun,024,Ifelodun
+Ogun,022,Ifo
+Kaduna,014,Igabi
+Kogi,018,Igalamela Odolu
+Enugu,011,Igbo Etiti
+Enugu,011,Igbo Eze North
+Enugu,011,Igbo Eze South
+Edo,010,Igueben
+Anambra,004,Ihiala
+Imo,012,Ihitte/Uboma
+Ondo,023,Ilaje
+Ogun,022,Ijebu East
+Ogun,022,Ijebu North
+Ogun,022,Ijebu North East
+Ogun,022,Ijebu Ode
+Ekiti,034,Ijero
+Kogi,018,Ijumu
+Akwa Ibom,003,Ika
+Delta,009,Ika North East
+Kaduna,014,Ikara
+Delta,009,Ika South
+Imo,012,Ikeduru
+Lagos,020,Ikeja
+Ogun,022,Ikenne
+Ekiti,034,Ikere
+Ekiti,034,Ikole
+Cross River,008,Ikom
+Akwa Ibom,003,Ikono
+Lagos,020,Ikorodu
+Akwa Ibom,003,Ikot Abasi
+Akwa Ibom,003,Ikot Ekpene
+Edo,010,Ikpoba Okha
+Rivers,027,Ikwerre
+Ebonyi,033,Ikwo
+Abia,001,Ikwuano
+Osun,024,Ila
+Ekiti,034,Ilejemeje
+Ondo,023,Ile Oluji/Okeigbo
+Osun,024,Ilesa East
+Osun,024,Ilesa West
+Sokoto,028,Illela
+Kwara,019,Ilorin East
+Kwara,019,Ilorin South
+Kwara,019,Ilorin West
+Ogun,022,Imeko Afon
+Katsina,016,Ingawa
+Akwa Ibom,003,Ini
+Ogun,022,Ipokia
+Ondo,023,Irele
+Oyo,025,Irepo
+Kwara,019,Irepodun
+Osun,024,Irepodun
+Ekiti,034,Irepodun/Ifelodun
+Osun,024,Irewole
+Sokoto,028,Isa
+Ekiti,034,Ise/Orun
+Oyo,025,Iseyin
+Ebonyi,033,Ishielu
+Imo,012,Isiala Mbano
+Abia,001,Isiala Ngwa North
+Abia,001,Isiala Ngwa South
+Kwara,019,Isin
+Enugu,011,Isi Uzo
+Osun,024,Isokan
+Delta,009,Isoko North
+Delta,009,Isoko South
+Imo,012,Isu
+Abia,001,Isuikwuato
+Bauchi,005,Itas/Gadau
+Oyo,025,Itesiwaju
+Akwa Ibom,003,Itu
+Ebonyi,033,Ivo
+Oyo,025,Iwajowa
+Osun,024,Iwo
+Ebonyi,033,Izzi
+Kaduna,014,Jaba
+Adamawa,002,Jada
+Jigawa,013,Jahun
+Yobe,030,Jakusko
+Taraba,029,Jalingo
+Bauchi,005,Jama'are
+Kebbi,017,Jega
+Kaduna,014,Jema'a
+Borno,007,Jere
+Katsina,016,Jibia
+Plateau,026,Jos East
+Plateau,026,Jos North
+Plateau,026,Jos South
+Kogi,018,Kabba/Bunu
+Kano,015,Kabo
+Kaduna,014,Kachia
+Kaduna,014,Kaduna North
+Kaduna,014,Kaduna South
+Jigawa,013,Kafin Hausa
+Katsina,016,Kafur
+Borno,007,Kaga
+Kaduna,014,Kagarko
+Kwara,019,Kaiama
+Katsina,016,Kaita
+Oyo,025,Kajola
+Kaduna,014,Kajuru
+Borno,007,Kala/Balge
+Kebbi,017,Kalgo
+Gombe,035,Kaltungo
+Plateau,026,Kanam
+Katsina,016,Kankara
+Plateau,026,Kanke
+Katsina,016,Kankia
+Kano,015,Kano Municipal
+Yobe,030,Karasuwa
+Kano,015,Karaye
+Taraba,029,Karim Lamido
+Nasarawa,036,Karu
+Bauchi,005,Katagum
+Niger,021,Katcha
+Katsina,016,Katsina
+Benue,006,Katsina-Ala
+Kaduna,014,Kaura
+Zamfara,037,Kaura Namoda
+Kaduna,014,Kauru
+Jigawa,013,Kazaure
+Nasarawa,036,Keana
+Sokoto,028,Kebbe
+Nasarawa,036,Keffi
+Rivers,027,Khana
+Kano,015,Kibiya
+Bauchi,005,Kirfi
+Jigawa,013,Kiri Kasama
+Kano,015,Kiru
+Jigawa,013,Kiyawa
+Kogi,018,Kogi
+Kebbi,017,Koko/Besse
+Nasarawa,036,Kokona
+Bayelsa,032,Kolokuma/Opokuma
+Borno,007,Konduga
+Benue,006,Konshisha
+Niger,021,Kontagora
+Lagos,020,Kosofe
+Jigawa,013,Kaugama
+Kaduna,014,Kubau
+Kaduna,014,Kudan
+FCT,031,Kuje
+Borno,007,Kukawa
+Kano,015,Kumbotso
+Taraba,029,Kumi
+Kano,015,Kunchi
+Kano,015,Kura
+Katsina,016,Kurfi
+Katsina,016,Kusada
+FCT,031,Kwali
+Benue,006,Kwande
+Gombe,035,Kwami
+Sokoto,028,Kware
+Borno,007,Kwaya Kusar
+Nasarawa,036,Lafia
+Oyo,025,Lagelu
+Lagos,020,Lagos Island
+Lagos,020,Lagos Mainland
+Plateau,026,Langtang South
+Plateau,026,Langtang North
+Niger,021,Lapai
+Adamawa,002,Lamurde
+Taraba,029,Lau
+Niger,021,Lavun
+Kaduna,014,Lere
+Benue,006,Logo
+Kogi,018,Lokoja
+Yobe,030,Machina
+Adamawa,002,Madagali
+Kano,015,Madobi
+Borno,007,Mafa
+Niger,021,Magama
+Borno,007,Magumeri
+Katsina,016,Mai'Adua
+Borno,007,Maiduguri
+Jigawa,013,Maigatari
+Adamawa,002,Maiha
+Kebbi,017,Maiyama
+Kaduna,014,Makarfi
+Kano,015,Makoda
+Jigawa,013,Malam Madori
+Katsina,016,Malumfashi
+Plateau,026,Mangu
+Katsina,016,Mani
+Zamfara,037,Maradun
+Niger,021,Mariga
+Benue,006,Makurdi
+Borno,007,Marte
+Zamfara,037,Maru
+Niger,021,Mashegu
+Katsina,016,Mashi
+Katsina,016,Matazu
+Adamawa,002,Mayo Belwa
+Imo,012,Mbaitoli
+Akwa Ibom,003,Mbo
+Adamawa,002,Michika
+Jigawa,013,Miga
+Plateau,026,Mikang
+Kano,015,Minjibir
+Bauchi,005,Misau
+Ekiti,034,Moba
+Borno,007,Mobbar
+Adamawa,002,Mubi North
+Adamawa,002,Mubi South
+Niger,021,Mokwa
+Borno,007,Monguno
+Kogi,018,Mopa Muro
+Kwara,019,Moro
+Niger,021,Moya
+Akwa Ibom,003,Mkpat-Enin
+Katsina,016,Musawa
+Lagos,020,Mushin
+Gombe,035,Nafada
+Yobe,030,Nangere
+Kano,015,Nasarawa
+Nasarawa,036,Nasarawa
+Nasarawa,036,Nasarawa Egon
+Delta,009,Ndokwa East
+Delta,009,Ndokwa West
+Bayelsa,032,Nembe
+Borno,007,Ngala
+Borno,007,Nganzai
+Kebbi,017,Ngaski
+Imo,012,Ngor Okpala
+Yobe,030,Nguru
+Bauchi,005,Ningi
+Imo,012,Njaba
+Anambra,004,Njikoka
+Enugu,011,Nkanu East
+Enugu,011,Nkanu West
+Imo,012,Nkwerre
+Anambra,004,Nnewi North
+Anambra,004,Nnewi South
+Akwa Ibom,003,Nsit-Atai
+Akwa Ibom,003,Nsit-Ibom
+Akwa Ibom,003,Nsit-Ubium
+Enugu,011,Nsukka
+Adamawa,002,Numan
+Imo,012,Nwangele
+Ogun,022,Obafemi Owode
+Cross River,008,Obanliku
+Benue,006,Obi
+Nasarawa,036,Obi
+Abia,001,Obi Ngwa
+Rivers,027,Obio/Akpor
+Osun,024,Obokun
+Akwa Ibom,003,Obot Akara
+Imo,012,Obowo
+Cross River,008,Obubra
+Cross River,008,Obudu
+Ogun,022,Odeda
+Ondo,023,Odigbo
+Ogun,022,Odogbolu
+Osun,024,Odo Otin
+Cross River,008,Odukpani
+Kwara,019,Offa
+Kogi,018,Ofu
+Rivers,027,Ogba/Egbema/Ndoni
+Benue,006,Ogbadibo
+Anambra,004,Ogbaru
+Bayelsa,032,Ogbia
+Oyo,025,Ogbomosho North
+Oyo,025,Ogbomosho South
+Rivers,027,Ogu/Bolo
+Cross River,008,Ogoja
+Oyo,025,Ogo Oluwa
+Kogi,018,Ogori/Magongo
+Ogun,022,Ogun Waterside
+Imo,012,Oguta
+Abia,001,Ohafia
+Imo,012,Ohaji/Egbema
+Ebonyi,033,Ohaozara
+Ebonyi,033,Ohaukwu
+Benue,006,Ohimini
+Edo,010,Orhionmwon
+Enugu,011,Oji River
+Lagos,020,Ojo
+Benue,006,Oju
+Kogi,018,Okehi
+Kogi,018,Okene
+Kwara,019,Oke Ero
+Imo,012,Okigwe
+Ondo,023,Okitipupa
+Akwa Ibom,003,Okobo
+Delta,009,Okpe
+Rivers,027,Okrika
+Kogi,018,Olamaboro
+Osun,024,Ola Oluwa
+Osun,024,Olorunda
+Oyo,025,Olorunsogo
+Oyo,025,Oluyole
+Kogi,018,Omala
+Rivers,027,Omuma
+Oyo,025,Ona Ara
+Ondo,023,Ondo East
+Ondo,023,Ondo West
+Ebonyi,033,Onicha
+Anambra,004,Onitsha North
+Anambra,004,Onitsha South
+Akwa Ibom,003,Onna
+Benue,006,Okpokwu
+Rivers,027,Opobo/Nkoro
+Edo,010,Oredo
+Oyo,025,Orelope
+Osun,024,Oriade
+Oyo,025,Ori Ire
+Imo,012,Orlu
+Osun,024,Orolu
+Akwa Ibom,003,Oron
+Imo,012,Orsu
+Imo,012,Oru East
+Akwa Ibom,003,Oruk Anam
+Anambra,004,Orumba North
+Anambra,004,Orumba South
+Imo,012,Oru West
+Ondo,023,Ose
+Delta,009,Oshimili North
+Delta,009,Oshimili South
+Lagos,020,Oshodi-Isolo
+Abia,001,Osisioma
+Osun,024,Osogbo
+Benue,006,Oturkpo
+Edo,010,Ovia North-East
+Edo,010,Ovia South-West
+Edo,010,Owan East
+Edo,010,Owan West
+Imo,012,Owerri Municipal
+Imo,012,Owerri North
+Imo,012,Owerri West
+Ondo,023,Owo
+Ekiti,034,Oye
+Anambra,004,Oyi
+Rivers,027,Oyigbo
+Oyo,025,Oyo West
+Oyo,025,Oyo East
+Kwara,019,Oyun
+Niger,021,Paikoro
+Plateau,026,Pankshin
+Delta,009,Patani
+Kwara,019,Pategi
+Rivers,027,Port Harcourt
+Yobe,030,Potiskum
+Plateau,026,Qua'an Pan
+Sokoto,028,Rabah
+Niger,021,Rafi
+Kano,015,Rano
+Ogun,022,Remo North
+Niger,021,Rijau
+Katsina,016,Rimi
+Kano,015,Rimin Gado
+Jigawa,013,Ringim
+Plateau,026,Riyom
+Kano,015,Rogo
+Jigawa,013,Roni
+Sokoto,028,Sabon Birni
+Kaduna,014,Sabon Gari
+Katsina,016,Sabuwa
+Katsina,016,Safana
+Bayelsa,032,Sagbama
+Kebbi,017,Sakaba
+Oyo,025,Saki East
+Oyo,025,Saki West
+Katsina,016,Sandamu
+Kaduna,014,Sanga
+Delta,009,Sapele
+Taraba,029,Sardauna
+Ogun,022,Shagamu
+Sokoto,028,Shagari
+Kebbi,017,Shanga
+Borno,007,Shani
+Kano,015,Shanono
+Adamawa,002,Shelleng
+Plateau,026,Shendam
+Zamfara,037,Shinkafi
+Bauchi,005,Shira
+Niger,021,Shiroro
+Gombe,035,Shongom
+Lagos,020,Shomolu
+Sokoto,028,Silame
+Kaduna,014,Soba
+Sokoto,028,Sokoto North
+Sokoto,028,Sokoto South
+Adamawa,002,Song
+Bayelsa,032,Southern Ijaw
+Niger,021,Suleja
+Jigawa,013,Sule Tankarkar
+Kano,015,Sumaila
+Kebbi,017,Suru
+Oyo,025,Surulere
+Lagos,020,Surulere
+Niger,021,Tafa
+Bauchi,005,Tafawa Balewa
+Rivers,027,Tai
+Kano,015,Takai
+Taraba,029,Takum
+Zamfara,037,Talata Mafara
+Sokoto,028,Tambuwal
+Sokoto,028,Tangaza
+Kano,015,Tarauni
+Benue,006,Tarka
+Yobe,030,Tarmuwa
+Jigawa,013,Taura
+Adamawa,002,Toungo
+Kano,015,Tofa
+Bauchi,005,Toro
+Nasarawa,036,Toto
+Zamfara,037,Chafe
+Kano,015,Tsanyawa
+Kano,015,Tudun Wada
+Sokoto,028,Tureta
+Enugu,011,Udenu
+Enugu,011,Udi
+Delta,009,Udu
+Akwa Ibom,003,Udung-Uko
+Delta,009,Ughelli North
+Delta,009,Ughelli South
+Abia,001,Ugwunagbo
+Edo,010,Uhunmwonde
+Akwa Ibom,003,Ukanafun
+Benue,006,Ukum
+Abia,001,Ukwa East
+Abia,001,Ukwa West
+Delta,009,Ukwuani
+Abia,001,Umuahia North
+Abia,001,Umuahia South
+Abia,001,Umu Nneochi
+Kano,015,Ungogo
+Imo,012,Unuimo
+Akwa Ibom,003,Uruan
+Akwa Ibom,003,Urue-Offong/Oruko
+Benue,006,Ushongo
+Taraba,029,Ussa
+Delta,009,Uvwie
+Akwa Ibom,003,Uyo
+Enugu,011,Uzo-Uwani
+Benue,006,Vandeikya
+Sokoto,028,Wamako
+Nasarawa,036,Wamba
+Kano,015,Warawa
+Bauchi,005,Warji
+Delta,009,Warri North
+Delta,009,Warri South
+Delta,009,Warri South West
+Kebbi,017,Wasagu/Danko
+Plateau,026,Wase
+Kano,015,Wudil
+Taraba,029,Wukari
+Sokoto,028,Wurno
+Niger,021,Wushishi
+Sokoto,028,Yabo
+Kogi,018,Yagba East
+Kogi,018,Yagba West
+Cross River,008,Yakuur
+Cross River,008,Yala
+Gombe,035,Yamaltu/Deba
+Jigawa,013,Yankwashi
+Kebbi,017,Yauri
+Bayelsa,032,Yenagoa
+Adamawa,002,Yola North
+Adamawa,002,Yola South
+Taraba,029,Yorro
+Yobe,030,Yunusari
+Yobe,030,Yusufari
+Bauchi,005,Zaki
+Katsina,016,Zango
+Kaduna,014,Zangon Kataf
+Kaduna,014,Zaria
+Taraba,029,Zing
+Zamfara,037,Zurmi
+Kebbi,017,Zuru

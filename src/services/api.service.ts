@@ -202,6 +202,7 @@ export interface DataRecord {
   category: string | null;
   accd_year: string | null;
   lga: string | null;
+  lga_code: string | null;
   sch_email: string | null;
   accreditation_type: string | null;
 }
@@ -332,6 +333,7 @@ export interface LGARecord {
   state_name: string;
   state_code: string;
   lga_name: string;
+  lga_code: string;
 }
 
 export const lgaService = {

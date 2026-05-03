@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { 
-  Upload, Download, Filter, Search, Trash2, RefreshCw, 
-  ArrowLeft, Database, ChevronDown, ChevronLeft, ChevronRight, X, AlertTriangle, 
+import {
+  Upload, Download, Filter, Search, Trash2, RefreshCw,
+  ArrowLeft, Database, ChevronDown, ChevronLeft, ChevronRight, X, AlertTriangle,
   FileSpreadsheet, LogOut, Key, Users, Edit3
 } from 'lucide-react';
 import { authService, dataService, lgaService, type DataRecord, type ExamType, type LGARecord } from '../services/api.service';
@@ -68,27 +68,27 @@ const DataManagement: React.FC = () => {
   // Derive unique filter values from data
   const filterOptions = useMemo(() => {
     const states = [...new Set(records.map(r => r.state_name).filter(Boolean))].sort();
-    
+
     // Filter records by selected state for other dropdowns
-    const stateFilteredRecords = filterState 
+    const stateFilteredRecords = filterState
       ? records.filter(r => r.state_name === filterState)
       : records;
 
     const custodians = [...new Set(stateFilteredRecords.map(r => r.cust_name).filter(Boolean))].sort();
-    
+
     // Use fixed options for Type and Category as fallbacks
     const typesFound = [...new Set(stateFilteredRecords.map(r => r.type).filter(Boolean) as string[])];
     const types = (typesFound.length > 0 ? typesFound : ['BOYS', 'GIRLS', 'MIXED']).sort();
-    
+
     const categoriesFound = [...new Set(stateFilteredRecords.map(r => r.category).filter(Boolean) as string[])];
     const categories = (categoriesFound.length > 0 ? categoriesFound : ['PRIVATE', 'PUBLIC', 'FEDERAL']).sort();
-    
+
     // Use allLgas state for LGA filter to ensure it's always populated
     const stateLgas = filterState
       ? allLgas.filter(l => l.state_name.toUpperCase() === filterState.toUpperCase()).map(l => l.lga_name)
       : allLgas.map(l => l.lga_name);
     const lgas = [...new Set(stateLgas)].sort();
-    
+
     return { states, custodians, types, categories, lgas };
   }, [records, filterState, allLgas]);
 
@@ -105,7 +105,7 @@ const DataManagement: React.FC = () => {
       if (filterType && r.type !== filterType) return false;
       if (filterCategory && r.category !== filterCategory) return false;
       if (filterLga && r.lga !== filterLga) return false;
-      
+
       if (term) {
         return (
           r.sch_name.toLowerCase().includes(term) ||
@@ -119,13 +119,14 @@ const DataManagement: React.FC = () => {
       return true;
     });
   }, [records, filterState, filterCustodian, filterType, filterCategory, filterLga, debouncedSearchTerm]);
-  
+
   const completionStats = useMemo(() => {
     const total = filteredRecords.length;
-    const complete = filteredRecords.filter(r => 
+    const complete = filteredRecords.filter(r =>
       r.type && r.type.trim() !== '' &&
       r.category && r.category.trim() !== '' &&
       r.lga && r.lga.trim() !== '' &&
+      r.lga_code && r.lga_code.trim() !== '' &&
       r.accd_year && r.accd_year.trim() !== '' &&
       r.sch_email && r.sch_email.trim() !== '' &&
       r.accreditation_type && r.accreditation_type.trim() !== ''
@@ -194,7 +195,7 @@ const DataManagement: React.FC = () => {
   const handleDownload = () => {
     if (filteredRecords.length === 0) return;
 
-    const headers = ['S/N', 'State Code', 'State Name', 'Sch Num', 'Sch Name', 'Sch Email', 'Cust Code', 'Cust Name', 'Cust Town', 'Type', 'Category', 'Date', 'LGA', 'Accreditation Type'];
+    const headers = ['S/N', 'State Code', 'State Name', 'Sch Num', 'Sch Name', 'Sch Email', 'Cust Code', 'Cust Name', 'Cust Town', 'Type', 'Category', 'Date', 'LGA', 'LGA Code', 'Accreditation Type'];
     const csvRows = [headers.join(',')];
 
     filteredRecords.forEach((r, i) => {
@@ -212,6 +213,7 @@ const DataManagement: React.FC = () => {
         `"${r.category || ''}"`,
         `"${r.accd_year || ''}"`,
         `"${r.lga || ''}"`,
+        `"${r.lga_code || ''}"`,
         `"${r.accreditation_type || ''}"`,
       ];
       csvRows.push(row.join(','));
@@ -221,14 +223,14 @@ const DataManagement: React.FC = () => {
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    
+
     // Build filename from active filters
     const parts = [examType.toUpperCase()];
     if (filterState) parts.push(filterState.replace(/\s+/g, '_'));
     if (filterCustodian) parts.push(filterCustodian.replace(/\s+/g, '_'));
     if (filterType) parts.push(filterType);
     parts.push('data');
-    
+
     link.href = url;
     link.download = `${parts.join('_')}.csv`;
     link.click();
@@ -350,8 +352,8 @@ const DataManagement: React.FC = () => {
         </div>
 
         {/* Completion Progress Card */}
-        <div className="card animate-fade-in" style={{ 
-          marginBottom: '1.5rem', 
+        <div className="card animate-fade-in" style={{
+          marginBottom: '1.5rem',
           background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
           border: '1px solid var(--border-color)',
           display: 'flex',
@@ -361,10 +363,10 @@ const DataManagement: React.FC = () => {
           boxShadow: 'var(--shadow-sm)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ 
-              background: 'var(--accent)', 
-              color: 'var(--primary)', 
-              padding: '0.75rem', 
+            <div style={{
+              background: 'var(--accent)',
+              color: 'var(--primary)',
+              padding: '0.75rem',
               borderRadius: 'var(--radius-md)',
               display: 'flex',
               alignItems: 'center',
@@ -379,17 +381,17 @@ const DataManagement: React.FC = () => {
               </p>
             </div>
           </div>
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem', minWidth: '200px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '0.85rem', fontWeight: 600 }}>
               <span style={{ color: 'var(--primary)' }}>{completionStats.percentage}% Complete</span>
               <span style={{ color: 'var(--text-muted)' }}>({completionStats.complete}/{completionStats.total})</span>
             </div>
             <div style={{ width: '100%', height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
-              <div style={{ 
-                width: `${completionStats.percentage}%`, 
-                height: '100%', 
-                background: 'var(--primary)', 
+              <div style={{
+                width: `${completionStats.percentage}%`,
+                height: '100%',
+                background: 'var(--primary)',
                 transition: 'width 0.5s ease-out',
                 borderRadius: '4px'
               }} />
@@ -593,204 +595,205 @@ const DataManagement: React.FC = () => {
           ) : (
             <>
               <div className="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th style={{ width: '40px' }}>
-                      <input
-                        type="checkbox"
-                        checked={paginatedRecords.length > 0 && selectedIds.size === paginatedRecords.length}
-                        onChange={toggleSelectAll}
-                        style={{ cursor: 'pointer' }}
-                      />
-                    </th>
-                    <th style={{ width: '50px' }}>S/N</th>
-                    <th>State</th>
-                    <th>School</th>
-                    <th>Custodian</th>
-                    <th>Type</th>
-                    <th>Category</th>
-                    <th>LGA</th>
-                    <th>Date</th>
-                    <th>Email</th>
-                    <th>Accreditation</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedRecords.map((record, index) => (
-                    <tr key={record.id} style={{ background: selectedIds.has(record.id) ? '#eff6ff' : undefined }}>
-                      <td>
+                <table>
+                  <thead>
+                    <tr>
+                      <th style={{ width: '40px' }}>
                         <input
                           type="checkbox"
-                          checked={selectedIds.has(record.id)}
-                          onChange={() => toggleSelect(record.id)}
+                          checked={paginatedRecords.length > 0 && selectedIds.size === paginatedRecords.length}
+                          onChange={toggleSelectAll}
                           style={{ cursor: 'pointer' }}
                         />
-                      </td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{(currentPage - 1) * rowsPerPage + index + 1}</td>
-                      <td>
-                        <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{record.state_name}</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{record.state_code}</div>
-                      </td>
-                      <td>
-                        <div style={{ fontWeight: 500, fontSize: '0.85rem' }}>{record.sch_name}</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{record.sch_num}</div>
-                      </td>
-                      <td>
-                        <div style={{ fontSize: '0.85rem' }}>{record.cust_name}</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{record.cust_code} · {record.cust_town}</div>
-                      </td>
-                      <td>
-                        {record.type && (
-                          <span style={{
-                            padding: '0.15rem 0.5rem',
-                            borderRadius: '999px',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            background: '#dbeafe',
-                            color: '#1e40af'
-                          }}>
-                            {record.type}
-                          </span>
-                        )}
-                      </td>
-                      <td style={{ fontSize: '0.85rem' }}>{record.category || '—'}</td>
-                      <td style={{ fontSize: '0.85rem' }}>{record.lga || '—'}</td>
-                      <td style={{ fontSize: '0.85rem' }}>{record.accd_year || '—'}</td>
-                      <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'lowercase' }}>{record.sch_email?.toLowerCase() || '—'}</td>
-                      <td>
-                        {record.accreditation_type ? (
-                          <span style={{
-                            padding: '0.15rem 0.5rem',
-                            borderRadius: '999px',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            background: record.accreditation_type === 'FULL' ? '#dcfce7' : record.accreditation_type === 'PARTIAL' ? '#fef08a' : '#fee2e2',
-                            color: record.accreditation_type === 'FULL' ? '#166534' : record.accreditation_type === 'PARTIAL' ? '#854d0e' : '#991b1b'
-                          }}>
-                            {record.accreditation_type}
-                          </span>
-                        ) : (
-                          <span style={{ fontSize: '0.85rem' }}>—</span>
-                        )}
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                          <button 
-                            className="btn btn-outline" 
-                            style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem', color: 'var(--primary)', borderColor: 'var(--primary)' }}
-                            onClick={() => setEditingRecord(record)}
-                            title="Edit Record"
-                          >
-                            <Edit3 size={14} />
-                          </button>
-                          <button 
-                            className="btn btn-outline" 
-                            style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem', color: '#dc2626', borderColor: '#dc2626' }}
-                            onClick={() => handleSingleDelete(record.id)}
-                            title="Delete Record"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </td>
+                      </th>
+                      <th style={{ width: '50px' }}>S/N</th>
+                      <th>State</th>
+                      <th>School</th>
+                      <th>Custodian</th>
+                      <th>Type</th>
+                      <th>Category</th>
+                      <th>LGA</th>
+                      <th>LGA Code</th>
+                      <th>Date</th>
+                      <th>Email</th>
+                      <th>Accreditation</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                  {filteredRecords.length === 0 && (
-                    <tr>
-                      <td colSpan={10} style={{ textAlign: 'center', padding: '3rem' }}>
-                        <Database size={32} style={{ color: 'var(--border-color)', marginBottom: '0.5rem' }} />
-                        <p style={{ color: 'var(--text-muted)' }}>
-                          {records.length === 0 ? `No ${examType.toUpperCase()} records found. Upload a CSV to get started.` : 'No records match your filters.'}
-                        </p>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {paginatedRecords.map((record, index) => (
+                      <tr key={record.id} style={{ background: selectedIds.has(record.id) ? '#eff6ff' : undefined }}>
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.has(record.id)}
+                            onChange={() => toggleSelect(record.id)}
+                            style={{ cursor: 'pointer' }}
+                          />
+                        </td>
+                        <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{(currentPage - 1) * rowsPerPage + index + 1}</td>
+                        <td>
+                          <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{record.state_name}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{record.state_code}</div>
+                        </td>
+                        <td>
+                          <div style={{ fontWeight: 500, fontSize: '0.85rem' }}>{record.sch_name}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{record.sch_num}</div>
+                        </td>
+                        <td>
+                          <div style={{ fontSize: '0.85rem' }}>{record.cust_name}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{record.cust_code}</div>
+                        </td>
+                        <td>
+                          {record.type && (
+                            <span style={{
+                              padding: '0.15rem 0.5rem',
+                              borderRadius: '999px',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              background: '#dbeafe',
+                              color: '#1e40af'
+                            }}>
+                              {record.type}
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ fontSize: '0.85rem' }}>{record.category || '—'}</td>
+                        <td style={{ fontSize: '0.85rem' }}>{record.lga || '—'}</td>
+                        <td style={{ fontSize: '0.85rem' }}><code>{record.lga_code || '—'}</code></td>
+                        <td style={{ fontSize: '0.85rem' }}>{record.accd_year || '—'}</td>
+                        <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'lowercase' }}>{record.sch_email?.toLowerCase() || '—'}</td>
+                        <td>
+                          {record.accreditation_type ? (
+                            <span style={{
+                              padding: '0.15rem 0.5rem',
+                              borderRadius: '999px',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              background: record.accreditation_type === 'FULL' ? '#dcfce7' : record.accreditation_type === 'PARTIAL' ? '#fef08a' : '#fee2e2',
+                              color: record.accreditation_type === 'FULL' ? '#166534' : record.accreditation_type === 'PARTIAL' ? '#854d0e' : '#991b1b'
+                            }}>
+                              {record.accreditation_type}
+                            </span>
+                          ) : (
+                            <span style={{ fontSize: '0.85rem' }}>—</span>
+                          )}
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button
+                              className="btn btn-outline"
+                              style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem', color: 'var(--primary)', borderColor: 'var(--primary)' }}
+                              onClick={() => setEditingRecord(record)}
+                              title="Edit Record"
+                            >
+                              <Edit3 size={14} />
+                            </button>
+                            <button
+                              className="btn btn-outline"
+                              style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem', color: '#dc2626', borderColor: '#dc2626' }}
+                              onClick={() => handleSingleDelete(record.id)}
+                              title="Delete Record"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {filteredRecords.length === 0 && (
+                      <tr>
+                        <td colSpan={10} style={{ textAlign: 'center', padding: '3rem' }}>
+                          <Database size={32} style={{ color: 'var(--border-color)', marginBottom: '0.5rem' }} />
+                          <p style={{ color: 'var(--text-muted)' }}>
+                            {records.length === 0 ? `No ${examType.toUpperCase()} records found. Upload a CSV to get started.` : 'No records match your filters.'}
+                          </p>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
-            {/* Pagination Controls */}
-            {filteredRecords.length > 0 && (
-              <div style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-                padding: '1rem 0',
-                flexWrap: 'wrap',
-                gap: '1rem',
-                marginTop: '0.5rem'
-              }}>
-                {/* Page info & navigation */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    {((currentPage - 1) * rowsPerPage + 1).toLocaleString()}–{Math.min(currentPage * rowsPerPage, filteredRecords.length).toLocaleString()} of {filteredRecords.length.toLocaleString()}
-                  </span>
-                  <div style={{ display: 'flex', gap: '0.25rem' }}>
-                    <button
-                      className="btn btn-outline"
-                      style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem' }}
-                      onClick={() => setCurrentPage(1)}
-                      disabled={currentPage === 1}
-                      title="First page"
-                    >
-                      First
-                    </button>
-                    <button
-                      className="btn btn-outline"
-                      style={{ padding: '0.35rem 0.5rem' }}
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      title="Previous page"
-                    >
-                      <ChevronLeft size={16} />
-                    </button>
-                    <span style={{
-                      padding: '0.35rem 0.75rem',
-                      background: 'var(--accent)',
-                      borderRadius: 'var(--radius-sm)',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      color: 'var(--primary-dark)'
-                    }}>
-                      {currentPage} / {totalPages}
+              {/* Pagination Controls */}
+              {filteredRecords.length > 0 && (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  padding: '1rem 0',
+                  flexWrap: 'wrap',
+                  gap: '1rem',
+                  marginTop: '0.5rem'
+                }}>
+                  {/* Page info & navigation */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                      {((currentPage - 1) * rowsPerPage + 1).toLocaleString()}–{Math.min(currentPage * rowsPerPage, filteredRecords.length).toLocaleString()} of {filteredRecords.length.toLocaleString()}
                     </span>
-                    <button
-                      className="btn btn-outline"
-                      style={{ padding: '0.35rem 0.5rem' }}
-                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                      disabled={currentPage === totalPages}
-                      title="Next page"
-                    >
-                      <ChevronRight size={16} />
-                    </button>
-                    <button
-                      className="btn btn-outline"
-                      style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem' }}
-                      onClick={() => setCurrentPage(totalPages)}
-                      disabled={currentPage === totalPages}
-                      title="Last page"
-                    >
-                      Last
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.25rem' }}>
+                      <button
+                        className="btn btn-outline"
+                        style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem' }}
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                        title="First page"
+                      >
+                        First
+                      </button>
+                      <button
+                        className="btn btn-outline"
+                        style={{ padding: '0.35rem 0.5rem' }}
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        title="Previous page"
+                      >
+                        <ChevronLeft size={16} />
+                      </button>
+                      <span style={{
+                        padding: '0.35rem 0.75rem',
+                        background: 'var(--accent)',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        color: 'var(--primary-dark)'
+                      }}>
+                        {currentPage} / {totalPages}
+                      </span>
+                      <button
+                        className="btn btn-outline"
+                        style={{ padding: '0.35rem 0.5rem' }}
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        title="Next page"
+                      >
+                        <ChevronRight size={16} />
+                      </button>
+                      <button
+                        className="btn btn-outline"
+                        style={{ padding: '0.35rem 0.5rem', fontSize: '0.8rem' }}
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                        title="Last page"
+                      >
+                        Last
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
             </>
           )}
         </div>
       </main>
 
       {editingRecord && (
-        <EditRecordModal 
+        <EditRecordModal
           record={editingRecord}
           examType={examType}
           lgas={allLgas
             .filter(l => l.state_name.toUpperCase() === editingRecord.state_name.toUpperCase())
-            .map(l => l.lga_name)
-            .sort()
+            .sort((a, b) => a.lga_name.localeCompare(b.lga_name))
           }
           onClose={() => setEditingRecord(null)}
           onSuccess={() => {

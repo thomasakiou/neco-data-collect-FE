@@ -13,6 +13,7 @@ const EditLgaModal: React.FC<EditLgaModalProps> = ({ lga, onClose, onSuccess }) 
     state_name: lga?.state_name || '',
     state_code: lga?.state_code || '',
     lga_name: lga?.lga_name || '',
+    lga_code: lga?.lga_code || '',
   });
   
   const [loading, setLoading] = useState(false);
@@ -93,6 +94,18 @@ const EditLgaModal: React.FC<EditLgaModalProps> = ({ lga, onClose, onSuccess }) 
               onChange={handleChange} 
               required 
               placeholder="e.g. Aba South"
+            />
+          </div>
+          <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+            <label className="form-label">LGA Code</label>
+            <input 
+              type="text" 
+              name="lga_code" 
+              className="form-control" 
+              value={formData.lga_code} 
+              onChange={handleChange} 
+              required 
+              placeholder="e.g. 01"
             />
           </div>
 

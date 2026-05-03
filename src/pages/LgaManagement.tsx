@@ -56,6 +56,7 @@ const LgaManagement: React.FC = () => {
         const term = searchTerm.toLowerCase();
         return (
           l.lga_name.toLowerCase().includes(term) ||
+          l.lga_code.toLowerCase().includes(term) ||
           l.state_name.toLowerCase().includes(term) ||
           l.state_code.toLowerCase().includes(term)
         );
@@ -257,6 +258,7 @@ const LgaManagement: React.FC = () => {
                       <th>State Code</th>
                       <th>State Name</th>
                       <th>LGA Name</th>
+                      <th>LGA Code</th>
                       <th style={{ width: '120px' }}>Actions</th>
                     </tr>
                   </thead>
@@ -268,6 +270,7 @@ const LgaManagement: React.FC = () => {
                         <td><code>{lga.state_code}</code></td>
                         <td>{lga.state_name}</td>
                         <td style={{ fontWeight: 600 }}>{lga.lga_name}</td>
+                        <td><code>{lga.lga_code}</code></td>
                         <td>
                           <div style={{ display: 'flex', gap: '0.5rem' }}>
                             <button className="btn btn-outline" style={{ padding: '0.35rem 0.5rem', color: 'var(--primary)', borderColor: 'var(--primary)' }} onClick={() => setEditingLga(lga)} title="Edit">
