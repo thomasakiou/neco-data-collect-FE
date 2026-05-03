@@ -32,6 +32,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
     accd_year: record.accd_year || '',
     lga: record.lga || '',
     sch_email: record.sch_email || '',
+    accreditation_type: record.accreditation_type || '',
   });
   
   const userEmail = authService.getEmail();
@@ -84,7 +85,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
 
   const isComplete = (data: Partial<DataRecord>) => {
     const check = (val: string | null | undefined) => !!val && val.trim() !== '';
-    return check(data.state_name) && check(data.state_code) && check(data.sch_num) && check(data.sch_name) && check(data.cust_name) && check(data.cust_code) && check(data.cust_town) && check(data.lga) && check(data.type) && check(data.category) && check(data.accd_year) && check(data.sch_email);
+    return check(data.state_name) && check(data.state_code) && check(data.sch_num) && check(data.sch_name) && check(data.cust_name) && check(data.cust_code) && check(data.cust_town) && check(data.lga) && check(data.type) && check(data.category) && check(data.accd_year) && check(data.sch_email) && check(data.accreditation_type);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -217,6 +218,15 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
             <div className="form-group">
               <label className="form-label">School Email</label>
               <input type="email" name="sch_email" className="form-control" value={formData.sch_email ?? ''} onChange={handleChange} required={!isAdmin} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Accreditation Type</label>
+              <select name="accreditation_type" className="form-control" value={formData.accreditation_type || ''} onChange={handleChange} required={!isAdmin}>
+                <option value="">Select Accreditation Type</option>
+                <option value="FULL">FULL</option>
+                <option value="PARTIAL">PARTIAL</option>
+                <option value="FAILED">FAILED</option>
+              </select>
             </div>
           </div>
 

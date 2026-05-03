@@ -127,7 +127,8 @@ const DataManagement: React.FC = () => {
       r.category && r.category.trim() !== '' &&
       r.lga && r.lga.trim() !== '' &&
       r.accd_year && r.accd_year.trim() !== '' &&
-      r.sch_email && r.sch_email.trim() !== ''
+      r.sch_email && r.sch_email.trim() !== '' &&
+      r.accreditation_type && r.accreditation_type.trim() !== ''
     ).length;
     const percentage = total > 0 ? Math.round((complete / total) * 100) : 0;
     return { complete, total, percentage };
@@ -193,7 +194,7 @@ const DataManagement: React.FC = () => {
   const handleDownload = () => {
     if (filteredRecords.length === 0) return;
 
-    const headers = ['S/N', 'State Code', 'State Name', 'Sch Num', 'Sch Name', 'Sch Email', 'Cust Code', 'Cust Name', 'Cust Town', 'Type', 'Category', 'Date', 'LGA'];
+    const headers = ['S/N', 'State Code', 'State Name', 'Sch Num', 'Sch Name', 'Sch Email', 'Cust Code', 'Cust Name', 'Cust Town', 'Type', 'Category', 'Date', 'LGA', 'Accreditation Type'];
     const csvRows = [headers.join(',')];
 
     filteredRecords.forEach((r, i) => {
@@ -211,6 +212,7 @@ const DataManagement: React.FC = () => {
         `"${r.category || ''}"`,
         `"${r.accd_year || ''}"`,
         `"${r.lga || ''}"`,
+        `"${r.accreditation_type || ''}"`,
       ];
       csvRows.push(row.join(','));
     });
@@ -611,6 +613,7 @@ const DataManagement: React.FC = () => {
                     <th>LGA</th>
                     <th>Date</th>
                     <th>Email</th>
+                    <th>Accreditation</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -657,6 +660,22 @@ const DataManagement: React.FC = () => {
                       <td style={{ fontSize: '0.85rem' }}>{record.accd_year || '—'}</td>
                       <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'lowercase' }}>{record.sch_email?.toLowerCase() || '—'}</td>
                       <td>
+                        {record.accreditation_type ? (
+                          <span style={{
+                            padding: '0.15rem 0.5rem',
+                            borderRadius: '999px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            background: record.accreditation_type === 'FULL' ? '#dcfce7' : record.accreditation_type === 'PARTIAL' ? '#fef08a' : '#fee2e2',
+                            color: record.accreditation_type === 'FULL' ? '#166534' : record.accreditation_type === 'PARTIAL' ? '#854d0e' : '#991b1b'
+                          }}>
+                            {record.accreditation_type}
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: '0.85rem' }}>—</span>
+                        )}
+                      </td>
+                      <td>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                           <button 
                             className="btn btn-outline" 
@@ -680,7 +699,7 @@ const DataManagement: React.FC = () => {
                   ))}
                   {filteredRecords.length === 0 && (
                     <tr>
-                      <td colSpan={9} style={{ textAlign: 'center', padding: '3rem' }}>
+                      <td colSpan={10} style={{ textAlign: 'center', padding: '3rem' }}>
                         <Database size={32} style={{ color: 'var(--border-color)', marginBottom: '0.5rem' }} />
                         <p style={{ color: 'var(--text-muted)' }}>
                           {records.length === 0 ? `No ${examType.toUpperCase()} records found. Upload a CSV to get started.` : 'No records match your filters.'}

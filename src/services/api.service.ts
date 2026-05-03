@@ -203,6 +203,7 @@ export interface DataRecord {
   accd_year: string | null;
   lga: string | null;
   sch_email: string | null;
+  accreditation_type: string | null;
 }
 
 export type ExamType = 'ssce' | 'bece';
