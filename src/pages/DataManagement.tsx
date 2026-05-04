@@ -74,7 +74,7 @@ const DataManagement: React.FC = () => {
   // Derive unique filter values from data
   const filterOptions = useMemo(() => {
     const statesSet = new Set<string>();
-    const custodiansSet = new Set<string>();
+    const custodiansMap = new Map<string, { name: string, code: string, town: string }>();
     const typesSet = new Set<string>();
     const categoriesSet = new Set<string>();
     const lgasSet = new Set<string>();
@@ -84,11 +84,13 @@ const DataManagement: React.FC = () => {
     // Single pass to gather all filter options
     records.forEach(r => {
       if (r.state_name) statesSet.add(r.state_name);
-      
+
       const isMatchState = !filterState || r.state_name === filterState;
-      
+
       if (isMatchState) {
-        if (r.cust_name) custodiansSet.add(r.cust_name);
+        if (r.cust_name && !custodiansMap.has(r.cust_name)) {
+          custodiansMap.set(r.cust_name, { name: r.cust_name, code: r.cust_code || '', town: r.cust_town || '' });
+        }
         if (r.type) typesSet.add(r.type);
         if (r.category) categoriesSet.add(r.category);
       }
@@ -102,13 +104,13 @@ const DataManagement: React.FC = () => {
     });
 
     const states = Array.from(statesSet).sort();
-    const custodians = Array.from(custodiansSet).sort();
+    const custodians = Array.from(custodiansMap.values()).sort((a, b) => a.name.localeCompare(b.name));
     const types = Array.from(typesSet).sort();
     if (types.length === 0) types.push('BOYS', 'GIRLS', 'MIXED');
     const categories = Array.from(categoriesSet).sort();
     if (categories.length === 0) categories.push('PRIVATE', 'PUBLIC', 'FEDERAL');
     const lgas = Array.from(lgasSet).sort();
-    
+
     return { states, custodians, types, categories, lgas };
   }, [records, filterState, allLgas]);
 
@@ -545,7 +547,7 @@ const DataManagement: React.FC = () => {
                   <select className="form-control" style={{ padding: '0.5rem' }} value={filterCustodian} onChange={e => setFilterCustodian(e.target.value)}>
                     <option value="">All Custodians</option>
                     <option value="__UNASSIGNED__">-- Schools without Custodian Points --</option>
-                    {filterOptions.custodians.map(c => <option key={c} value={c}>{c}</option>)}
+                    {filterOptions.custodians.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
                   </select>
                 </div>
                 <div>
@@ -811,6 +813,7 @@ const DataManagement: React.FC = () => {
         <EditRecordModal
           record={editingRecord}
           examType={examType}
+          custodians={filterOptions.custodians}
           lgas={allLgas
             .filter(l => {
               const lCode = (l.state_code || '').replace(/^0+/, '');

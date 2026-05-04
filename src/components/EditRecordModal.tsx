@@ -35,7 +35,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
     sch_email: record.sch_email || '',
     accreditation_type: record.accreditation_type || '',
   });
-  
+
   const userEmail = authService.getEmail();
   const isAdmin = userEmail?.toLowerCase() === 'thomas.akiou@gmail.com';
 
@@ -44,12 +44,12 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
+
     if (name === 'cust_name' && custodians) {
       const found = custodians.find(c => c.name === value);
       if (found) {
-        setFormData(prev => ({ 
-          ...prev, 
+        setFormData(prev => ({
+          ...prev,
           cust_name: found.name,
           cust_code: found.code,
           cust_town: found.town
@@ -57,7 +57,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
         return;
       }
     }
-    
+
     if (name === 'lga' && lgas) {
       const found = lgas.find(l => {
         const lName = typeof l === 'string' ? l : (l.lga_name || (l as any).lga || (l as any).name || '');
@@ -66,15 +66,15 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
       if (found) {
         const lName = typeof found === 'string' ? found : (found.lga_name || (found as any).lga || (found as any).name || value);
         const lCode = typeof found === 'string' ? '' : (found.lga_code || (found as any).code || '');
-        setFormData(prev => ({ 
-          ...prev, 
+        setFormData(prev => ({
+          ...prev,
           lga: lName,
           lga_code: lCode
         }));
         return;
       } else if (!value) {
-        setFormData(prev => ({ 
-          ...prev, 
+        setFormData(prev => ({
+          ...prev,
           lga: '',
           lga_code: ''
         }));
@@ -160,7 +160,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
               <label className="form-label">State Code</label>
               <input type="text" name="state_code" className="form-control" value={formData.state_code} onChange={handleChange} required={!isAdmin} />
             </div>
-            
+
             <div className="form-group">
               <label className="form-label">School Name</label>
               <input type="text" name="sch_name" className="form-control" value={formData.sch_name} onChange={handleChange} required={!isAdmin} />
@@ -169,22 +169,22 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
               <label className="form-label">School Number</label>
               <input type="text" name="sch_num" className="form-control" value={formData.sch_num} onChange={handleChange} required={!isAdmin} />
             </div>
-            
+
             <div className="form-group">
               <label className="form-label">Custodian Name</label>
-              <input 
-                type="text" 
-                name="cust_name" 
+              <input
+                type="text"
+                name="cust_name"
                 list="custodian-list"
-                className="form-control" 
-                value={formData.cust_name} 
-                onChange={handleChange} 
-                required={!isAdmin} 
+                className="form-control"
+                value={formData.cust_name}
+                onChange={handleChange}
+                required={!isAdmin}
               />
               {custodians && (
                 <datalist id="custodian-list">
                   {custodians.map(c => (
-                    <option key={c.name} value={c.name}>{c.name}</option>
+                    <option key={c.name} value={c.name} label={c.code ? `(${c.code})` : ''} />
                   ))}
                 </datalist>
               )}
@@ -201,12 +201,12 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
             <div className="form-group">
               <label className="form-label">LGA</label>
               {lgas && lgas.length > 0 ? (
-                <select 
-                  name="lga" 
-                  className="form-control" 
+                <select
+                  name="lga"
+                  className="form-control"
                   style={{ color: '#1a1a1a', backgroundColor: '#ffffff' }}
-                  value={formData.lga || ''} 
-                  onChange={handleChange} 
+                  value={formData.lga || ''}
+                  onChange={handleChange}
                   required={!isAdmin}
                 >
                   <option value="" style={{ color: '#1a1a1a' }}>Select LGA</option>
@@ -214,11 +214,11 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
                     const lName = typeof l === 'string' ? l : (l.lga_name || (l as any).lga || (l as any).name || (l as any).lgaName || '');
                     const lCode = typeof l === 'string' ? '' : (l.lga_code || (l as any).code || '');
                     if (idx === 0) console.log('DEBUG LGA Item:', l);
-                    
+
                     return (
-                      <option 
-                        key={typeof l === 'string' ? l : l.id} 
-                        value={lName} 
+                      <option
+                        key={typeof l === 'string' ? l : l.id}
+                        value={lName}
                         style={{ color: '#1a1a1a' }}
                       >
                         {(lName || 'UNNAMED LGA').toUpperCase()} {lCode ? `(${lCode})` : ''}
@@ -252,13 +252,13 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
             </div>
             <div className="form-group">
               <label className="form-label">Date</label>
-              <input 
-                type="date" 
-                name="accd_year" 
-                className="form-control" 
-                value={formatDateForInput(formData.accd_year || '')} 
-                onChange={handleDateChange} 
-                required={!isAdmin} 
+              <input
+                type="date"
+                name="accd_year"
+                className="form-control"
+                value={formatDateForInput(formData.accd_year || '')}
+                onChange={handleDateChange}
+                required={!isAdmin}
               />
             </div>
             <div className="form-group">
