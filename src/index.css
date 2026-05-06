@@ -126,6 +126,28 @@ h1, h2, h3, h4 {
   }
 }
 
+.form-section {
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  background: var(--bg-main);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.form-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--primary-light);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* Card */
 .card {
   background: white;

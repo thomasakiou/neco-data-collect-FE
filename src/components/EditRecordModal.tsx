@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Save, RefreshCw } from 'lucide-react';
+import { X, Save, RefreshCw, School, User, Award, MapPin } from 'lucide-react';
 import { authService, dataService, type DataRecord, type ExamType, type LGARecord } from '../services/api.service';
 
 export interface CustodianInfo {
@@ -151,128 +151,150 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-grid">
-            <div className="form-group">
-              <label className="form-label">State Name</label>
-              <input type="text" name="state_name" className="form-control" value={formData.state_name} onChange={handleChange} required={!isAdmin} />
+          <div className="form-section">
+            <h3 className="form-section-title">
+              <MapPin size={16} /> State Information
+            </h3>
+            <div className="form-grid">
+              <div className="form-group">
+                <label className="form-label">Name</label>
+                <input type="text" name="state_name" className="form-control" value={formData.state_name} onChange={handleChange} required={!isAdmin} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Code</label>
+                <input type="text" name="state_code" className="form-control" value={formData.state_code} onChange={handleChange} required={!isAdmin} />
+              </div>
             </div>
-            <div className="form-group">
-              <label className="form-label">State Code</label>
-              <input type="text" name="state_code" className="form-control" value={formData.state_code} onChange={handleChange} required={!isAdmin} />
-            </div>
+          </div>
 
-            <div className="form-group">
-              <label className="form-label">School Name</label>
-              <input type="text" name="sch_name" className="form-control" value={formData.sch_name} onChange={handleChange} required={!isAdmin} />
-            </div>
-            <div className="form-group">
-              <label className="form-label">School Number</label>
-              <input type="text" name="sch_num" className="form-control" value={formData.sch_num} onChange={handleChange} required={!isAdmin} />
-            </div>
+          <div className="form-section">
+            <h3 className="form-section-title">
+              <School size={16} /> School Information
+            </h3>
+            <div className="form-grid">
+              <div className="form-group">
+                <label className="form-label">Name</label>
+                <input type="text" name="sch_name" className="form-control" value={formData.sch_name} onChange={handleChange} required={!isAdmin} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Number</label>
+                <input type="text" name="sch_num" className="form-control" value={formData.sch_num} onChange={handleChange} required={!isAdmin} />
+              </div>
 
-            <div className="form-group">
-              <label className="form-label">Custodian Name</label>
-              <input
-                type="text"
-                name="cust_name"
-                list="custodian-list"
-                className="form-control"
-                value={formData.cust_name}
-                onChange={handleChange}
-                required={!isAdmin}
-              />
-              {custodians && (
-                <datalist id="custodian-list">
-                  {custodians.map(c => (
-                    <option key={c.name} value={c.name} label={c.code ? `(${c.code})` : ''} />
-                  ))}
-                </datalist>
-              )}
-            </div>
-            <div className="form-group">
-              <label className="form-label">Custodian Code</label>
-              <input type="text" name="cust_code" className="form-control" value={formData.cust_code} onChange={handleChange} required={!isAdmin} />
-            </div>
+              <div className="form-group">
+                <label className="form-label">Email</label>
+                <input type="email" name="sch_email" className="form-control" value={formData.sch_email ?? ''} onChange={handleChange} required={!isAdmin} />
+              </div>
 
-            <div className="form-group">
-              <label className="form-label">Custodian Town</label>
-              <input type="text" name="cust_town" className="form-control" value={formData.cust_town} onChange={handleChange} required={!isAdmin} />
+              <div className="form-group">
+                <label className="form-label">LGA</label>
+                {lgas && lgas.length > 0 ? (
+                  <select
+                    name="lga"
+                    className="form-control"
+                    style={{ color: '#1a1a1a', backgroundColor: '#ffffff' }}
+                    value={formData.lga || ''}
+                    onChange={handleChange}
+                    required={!isAdmin}
+                  >
+                    <option value="" style={{ color: '#1a1a1a' }}>Select LGA</option>
+                    {lgas.map((l, idx) => {
+                      const lName = typeof l === 'string' ? l : (l.lga_name || (l as any).lga || (l as any).name || (l as any).lgaName || '');
+                      const lCode = typeof l === 'string' ? '' : (l.lga_code || (l as any).code || '');
+                      return (
+                        <option
+                          key={typeof l === 'string' ? l : l.id}
+                          value={lName}
+                          style={{ color: '#1a1a1a' }}
+                        >
+                          {(lName || 'UNNAMED LGA').toUpperCase()} {lCode ? `(${lCode})` : ''}
+                        </option>
+                      );
+                    })}
+                  </select>
+                ) : (
+                  <input type="text" name="lga" className="form-control" value={formData.lga || ''} onChange={handleChange} required={!isAdmin} />
+                )}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Type</label>
+                <select name="type" className="form-control" value={formData.type || ''} onChange={handleChange} required={!isAdmin}>
+                  <option value="">Select Type</option>
+                  <option value="BOYS">BOYS</option>
+                  <option value="GIRLS">GIRLS</option>
+                  <option value="MIXED">MIXED</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Category</label>
+                <select name="category" className="form-control" value={formData.category || ''} onChange={handleChange} required={!isAdmin}>
+                  <option value="">Select Category</option>
+                  <option value="PRIVATE">PRIVATE</option>
+                  <option value="PUBLIC">PUBLIC</option>
+                  <option value="FEDERAL">FEDERAL</option>
+                </select>
+              </div>
             </div>
-            <div className="form-group">
-              <label className="form-label">LGA</label>
-              {lgas && lgas.length > 0 ? (
-                <select
-                  name="lga"
+          </div>
+
+          <div className="form-section">
+            <h3 className="form-section-title">
+              <User size={16} /> Custodian Details
+            </h3>
+            <div className="form-grid">
+              <div className="form-group">
+                <label className="form-label">Name</label>
+                <input
+                  type="text"
+                  name="cust_name"
+                  list="custodian-list"
                   className="form-control"
-                  style={{ color: '#1a1a1a', backgroundColor: '#ffffff' }}
-                  value={formData.lga || ''}
+                  value={formData.cust_name}
                   onChange={handleChange}
                   required={!isAdmin}
-                >
-                  <option value="" style={{ color: '#1a1a1a' }}>Select LGA</option>
-                  {lgas.map((l, idx) => {
-                    const lName = typeof l === 'string' ? l : (l.lga_name || (l as any).lga || (l as any).name || (l as any).lgaName || '');
-                    const lCode = typeof l === 'string' ? '' : (l.lga_code || (l as any).code || '');
-                    if (idx === 0) console.log('DEBUG LGA Item:', l);
+                />
+                {custodians && (
+                  <datalist id="custodian-list">
+                    {custodians.map(c => (
+                      <option key={c.name} value={c.name} label={c.code ? `(${c.code})` : ''} />
+                    ))}
+                  </datalist>
+                )}
+              </div>
+              <div className="form-group">
+                <label className="form-label">Code</label>
+                <input type="text" name="cust_code" className="form-control" value={formData.cust_code} onChange={handleChange} required={!isAdmin} />
+              </div>
+            </div>
+          </div>
 
-                    return (
-                      <option
-                        key={typeof l === 'string' ? l : l.id}
-                        value={lName}
-                        style={{ color: '#1a1a1a' }}
-                      >
-                        {(lName || 'UNNAMED LGA').toUpperCase()} {lCode ? `(${lCode})` : ''}
-                      </option>
-                    );
-                  })}
+          <div className="form-section">
+            <h3 className="form-section-title">
+              <Award size={16} /> Accreditation Details
+            </h3>
+            <div className="form-grid">
+              <div className="form-group">
+                <label className="form-label">Date of Last Accreditation</label>
+                <input
+                  type="date"
+                  name="accd_year"
+                  className="form-control"
+                  value={formatDateForInput(formData.accd_year || '')}
+                  onChange={handleDateChange}
+                  required={!isAdmin}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Accreditation Type</label>
+                <select name="accreditation_type" className="form-control" value={formData.accreditation_type || ''} onChange={handleChange} required={!isAdmin}>
+                  <option value="">Select Accreditation Type</option>
+                  <option value="FULL">FULL</option>
+                  <option value="PARTIAL">PARTIAL</option>
+                  <option value="FAILED">FAILED</option>
                 </select>
-              ) : (
-                <input type="text" name="lga" className="form-control" value={formData.lga || ''} onChange={handleChange} required={!isAdmin} />
-              )}
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Type</label>
-              <select name="type" className="form-control" value={formData.type || ''} onChange={handleChange} required={!isAdmin}>
-                <option value="">Select Type</option>
-                <option value="BOYS">BOYS</option>
-                <option value="GIRLS">GIRLS</option>
-                <option value="MIXED">MIXED</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Category</label>
-              <select name="category" className="form-control" value={formData.category || ''} onChange={handleChange} required={!isAdmin}>
-                <option value="">Select Category</option>
-                <option value="PRIVATE">PRIVATE</option>
-                <option value="PUBLIC">PUBLIC</option>
-                <option value="FEDERAL">FEDERAL</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label className="form-label">Date of Last Accreditation</label>
-              <input
-                type="date"
-                name="accd_year"
-                className="form-control"
-                value={formatDateForInput(formData.accd_year || '')}
-                onChange={handleDateChange}
-                required={!isAdmin}
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">School Email</label>
-              <input type="email" name="sch_email" className="form-control" value={formData.sch_email ?? ''} onChange={handleChange} required={!isAdmin} />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Accreditation Type</label>
-              <select name="accreditation_type" className="form-control" value={formData.accreditation_type || ''} onChange={handleChange} required={!isAdmin}>
-                <option value="">Select Accreditation Type</option>
-                <option value="FULL">FULL</option>
-                <option value="PARTIAL">PARTIAL</option>
-                <option value="FAILED">FAILED</option>
-              </select>
+              </div>
             </div>
           </div>
 
