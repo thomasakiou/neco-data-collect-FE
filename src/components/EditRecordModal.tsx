@@ -251,7 +251,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
               </select>
             </div>
             <div className="form-group">
-              <label className="form-label">Date</label>
+              <label className="form-label">Date of Last Accreditation</label>
               <input
                 type="date"
                 name="accd_year"
