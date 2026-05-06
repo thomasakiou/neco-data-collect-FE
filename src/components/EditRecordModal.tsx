@@ -198,7 +198,8 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
                     required={!isAdmin}
                   >
                     <option value="" style={{ color: '#1a1a1a' }}>Select LGA</option>
-                    {lgas.map((l, idx) => {
+                    {/* {lgas.map((l, idx) => { */}
+                    {lgas.map((l) => {
                       const lName = typeof l === 'string' ? l : (l.lga_name || (l as any).lga || (l as any).name || (l as any).lgaName || '');
                       const lCode = typeof l === 'string' ? '' : (l.lga_code || (l as any).code || '');
                       return (
