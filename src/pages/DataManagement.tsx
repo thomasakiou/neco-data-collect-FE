@@ -151,7 +151,8 @@ const DataManagement: React.FC = () => {
       r.lga_code && r.lga_code.trim() !== '' &&
       r.accd_year && r.accd_year.trim() !== '' &&
       r.sch_email && r.sch_email.trim() !== '' &&
-      r.accreditation_type && r.accreditation_type.trim() !== ''
+      r.accreditation_type && r.accreditation_type.trim() !== '' &&
+      r.locality && r.locality.trim() !== ''
     ).length;
     const percentage = total > 0 ? Math.round((complete / total) * 100) : 0;
     return { complete, total, percentage };
@@ -217,7 +218,7 @@ const DataManagement: React.FC = () => {
   const handleDownload = () => {
     if (filteredRecords.length === 0) return;
 
-    const headers = ['S/N', 'State Code', 'State Name', 'Sch Num', 'Sch Name', 'Sch Email', 'Cust Code', 'Cust Name', 'Cust Town', 'Type', 'Category', 'Date', 'LGA', 'LGA Code', 'Accreditation Type'];
+    const headers = ['S/N', 'State Code', 'State Name', 'Sch Num', 'Sch Name', 'Sch Email', 'Cust Code', 'Cust Name', 'Cust Town', 'Type', 'Category', 'Date', 'LGA', 'LGA Code', 'Accreditation Type', 'Locality'];
     const csvRows = [headers.join(',')];
 
     filteredRecords.forEach((r, i) => {
@@ -237,6 +238,7 @@ const DataManagement: React.FC = () => {
         `"${r.lga || ''}"`,
         `"${r.lga_code || ''}"`,
         `"${r.accreditation_type || ''}"`,
+        `"${r.locality || ''}"`,
       ];
       csvRows.push(row.join(','));
     });
@@ -638,6 +640,7 @@ const DataManagement: React.FC = () => {
                       <th>LGA Code</th>
                       <th>Date</th>
                       <th>Email</th>
+                      <th>Locality</th>
                       <th>Accreditation</th>
                       <th>Actions</th>
                     </tr>
@@ -685,6 +688,22 @@ const DataManagement: React.FC = () => {
                         <td style={{ fontSize: '0.85rem' }}><code>{record.lga_code || '—'}</code></td>
                         <td style={{ fontSize: '0.85rem' }}>{record.accd_year || '—'}</td>
                         <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'lowercase' }}>{record.sch_email?.toLowerCase() || '—'}</td>
+                        <td>
+                          {record.locality ? (
+                            <span style={{
+                              padding: '0.15rem 0.5rem',
+                              borderRadius: '999px',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              background: '#f1f5f9',
+                              color: '#475569'
+                            }}>
+                              {record.locality}
+                            </span>
+                          ) : (
+                            <span style={{ fontSize: '0.85rem' }}>—</span>
+                          )}
+                        </td>
                         <td>
                           {record.accreditation_type ? (
                             <span style={{

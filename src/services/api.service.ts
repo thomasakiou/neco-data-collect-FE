@@ -205,6 +205,7 @@ export interface DataRecord {
   lga_code: string | null;
   sch_email: string | null;
   accreditation_type: string | null;
+  locality: string | null;
 }
 
 export type ExamType = 'ssce' | 'bece';
