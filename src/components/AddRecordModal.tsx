@@ -38,6 +38,8 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isNewCustodian, setIsNewCustodian] = useState(false);
+  const [selectedCustodianId, setSelectedCustodianId] = useState('');
 
   // Derived data
   const states = useMemo(() => {
@@ -71,12 +73,13 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
   const custodians = useMemo(() => {
     const map = new Map<string, CustodianInfo>();
     existingRecords.forEach(r => {
-      if (r.cust_name && (formData.state_name ? r.state_name === formData.state_name : true)) {
+      if (r.cust_name && (formData.state_code ? r.state_code === formData.state_code : true)) {
         map.set(r.cust_name, { name: r.cust_name, code: r.cust_code || '', town: r.cust_town || '' });
       }
     });
+    console.log(`DEBUG: Found ${map.size} unique custodians for state code ${formData.state_code || 'ALL'}`);
     return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
-  }, [existingRecords, formData.state_name]);
+  }, [existingRecords, formData.state_code]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -90,8 +93,13 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
         lga: '',
         lga_code: '',
         sch_name: '',
-        sch_num: ''
+        sch_num: '',
+        cust_name: '',
+        cust_code: '',
+        cust_town: ''
       }));
+      setIsNewCustodian(false);
+      setSelectedCustodianId('');
       return;
     }
 
@@ -131,13 +139,25 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
     if (name === 'cust_name') {
       const cust = custodians.find(c => c.name === value);
       if (cust) {
+        setIsNewCustodian(false);
+        setSelectedCustodianId(cust.name);
         setFormData(prev => ({
           ...prev,
           cust_name: cust.name,
           cust_code: cust.code,
           cust_town: cust.town
         }));
+      } else if (value === '__NEW__') {
+        setIsNewCustodian(true);
+        setSelectedCustodianId('__NEW__');
+        setFormData(prev => ({
+          ...prev,
+          cust_name: '',
+          cust_code: '',
+          cust_town: ''
+        }));
       } else {
+        setSelectedCustodianId('');
         setFormData(prev => ({ ...prev, cust_name: value }));
       }
       return;
@@ -295,28 +315,59 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
             </h3>
             <div className="form-grid">
               <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label className="form-label">Custodian Name</label>
-                <input 
-                  type="text" 
-                  name="cust_name" 
-                  list="custodian-list" 
+                <label className="form-label">Select Existing Custodian</label>
+                <select 
                   className="form-control" 
-                  value={formData.cust_name} 
-                  onChange={handleChange}
-                  placeholder="Search existing custodians..."
-                />
-                <datalist id="custodian-list">
-                  {custodians.map(c => <option key={c.name} value={c.name} label={c.code} />)}
-                </datalist>
+                  value={selectedCustodianId} 
+                  onChange={(e) => handleChange({ target: { name: 'cust_name', value: e.target.value } } as any)}
+                  disabled={!formData.state_name}
+                >
+                  <option value="">Select a Custodian</option>
+                  <option value="__NEW__" style={{ fontWeight: 'bold', color: 'var(--primary)' }}>+ ADD NEW CUSTODIAN</option>
+                  {custodians.map(c => (
+                    <option key={c.name} value={c.name}>{c.name} ({c.code})</option>
+                  ))}
+                </select>
               </div>
-              <div className="form-group">
-                <label className="form-label">Custodian Code</label>
-                <input type="text" name="cust_code" className="form-control" value={formData.cust_code} onChange={handleChange} />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Custodian Town</label>
-                <input type="text" name="cust_town" className="form-control" value={formData.cust_town} onChange={handleChange} />
-              </div>
+
+              {(isNewCustodian || selectedCustodianId) && (
+                <>
+                  <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                    <label className="form-label">Custodian Name</label>
+                    <input 
+                      type="text" 
+                      name="cust_name" 
+                      className="form-control" 
+                      value={formData.cust_name ?? ''} 
+                      onChange={handleChange}
+                      placeholder="Enter custodian name"
+                      required={isNewCustodian}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Custodian Code (Number)</label>
+                    <input 
+                      type="text" 
+                      name="cust_code" 
+                      className="form-control" 
+                      value={formData.cust_code ?? ''} 
+                      onChange={handleChange} 
+                      placeholder="Enter code"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Custodian Town</label>
+                    <input 
+                      type="text" 
+                      name="cust_town" 
+                      className="form-control" 
+                      value={formData.cust_town ?? ''} 
+                      onChange={handleChange} 
+                      placeholder="Enter town"
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
