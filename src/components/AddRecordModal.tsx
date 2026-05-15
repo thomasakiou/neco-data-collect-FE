@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { X, Save, RefreshCw, School, User, Award, MapPin } from 'lucide-react';
 import { dataService, type DataRecord, type ExamType, type LGARecord } from '../services/api.service';
 
@@ -208,7 +208,7 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
             <div className="form-grid">
               <div className="form-group">
                 <label className="form-label">State</label>
-                <select name="state_name" className="form-control" value={formData.state_name} onChange={handleChange} required>
+                <select name="state_name" className="form-control" value={formData.state_name ?? ''} onChange={handleChange} required>
                   <option value="">Select State</option>
                   {states.map(s => <option key={s.name} value={s.name}>{s.name} ({s.code})</option>)}
                 </select>
@@ -218,7 +218,7 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
                 <select 
                   name="lga" 
                   className="form-control" 
-                  value={formData.lga} 
+                  value={formData.lga ?? ''} 
                   onChange={handleChange} 
                   required 
                   disabled={!formData.state_name}
@@ -262,7 +262,7 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
               </div>
               <div className="form-group">
                 <label className="form-label">Type</label>
-                <select name="type" className="form-control" value={formData.type || ''} onChange={handleChange}>
+                <select name="type" className="form-control" value={formData.type ?? ''} onChange={handleChange}>
                   <option value="">Select Type</option>
                   <option value="BOYS">BOYS</option>
                   <option value="GIRLS">GIRLS</option>
@@ -271,7 +271,7 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
               </div>
               <div className="form-group">
                 <label className="form-label">Category</label>
-                <select name="category" className="form-control" value={formData.category || ''} onChange={handleChange}>
+                <select name="category" className="form-control" value={formData.category ?? ''} onChange={handleChange}>
                   <option value="">Select Category</option>
                   <option value="PRIVATE">PRIVATE</option>
                   <option value="PUBLIC">PUBLIC</option>
@@ -280,7 +280,7 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
               </div>
               <div className="form-group">
                 <label className="form-label">Locality</label>
-                <select name="locality" className="form-control" value={formData.locality || ''} onChange={handleChange}>
+                <select name="locality" className="form-control" value={formData.locality ?? ''} onChange={handleChange}>
                   <option value="">Select Locality</option>
                   <option value="URBAN">URBAN</option>
                   <option value="RURAL">RURAL</option>
@@ -337,7 +337,7 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
               </div>
               <div className="form-group">
                 <label className="form-label">Accreditation Type</label>
-                <select name="accreditation_type" className="form-control" value={formData.accreditation_type || ''} onChange={handleChange}>
+                <select name="accreditation_type" className="form-control" value={formData.accreditation_type ?? ''} onChange={handleChange}>
                   <option value="">Select Type</option>
                   <option value="FULL">FULL</option>
                   <option value="PARTIAL">PARTIAL</option>
