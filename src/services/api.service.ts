@@ -324,6 +324,26 @@ export const dataService = {
     }
 
     return await response.json();
+  },
+
+  async createRecord(examType: ExamType, data: Partial<DataRecord>) {
+    this._clearCache(examType);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${BASE_URL}/${examType}/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Failed to create ${examType.toUpperCase()} record`);
+    }
+
+    return await response.json();
   }
 };
 

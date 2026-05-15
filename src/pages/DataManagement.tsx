@@ -3,10 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import {
   Upload, Download, Filter, Search, Trash2, RefreshCw,
   ArrowLeft, Database, ChevronDown, ChevronLeft, ChevronRight, X, AlertTriangle,
-  FileSpreadsheet, LogOut, Key, Users, Edit3
+  FileSpreadsheet, LogOut, Key, Users, Edit3, Plus
 } from 'lucide-react';
 import { authService, dataService, lgaService, type DataRecord, type ExamType, type LGARecord } from '../services/api.service';
 import EditRecordModal from '../components/EditRecordModal.tsx';
+import AddRecordModal from '../components/AddRecordModal.tsx';
 
 const DataManagement: React.FC = () => {
   const [examType, setExamType] = useState<ExamType>('ssce');
@@ -22,6 +23,7 @@ const DataManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [editingRecord, setEditingRecord] = useState<DataRecord | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [allLgas, setAllLgas] = useState<LGARecord[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -474,6 +476,15 @@ const DataManagement: React.FC = () => {
                 {uploading ? 'Uploading...' : 'Upload CSV'}
               </button>
 
+              <button
+                className="btn btn-primary"
+                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}
+                onClick={() => setIsAddModalOpen(true)}
+              >
+                <Plus size={16} />
+                Add School
+              </button>
+
               {/* Download */}
               <button
                 className="btn btn-outline"
@@ -852,6 +863,20 @@ const DataManagement: React.FC = () => {
             setEditingRecord(null);
             fetchRecords();
             setMessage({ type: 'success', text: 'Record updated successfully!' });
+          }}
+        />
+      )}
+
+      {isAddModalOpen && (
+        <AddRecordModal
+          examType={examType}
+          allLgas={allLgas}
+          existingRecords={records}
+          onClose={() => setIsAddModalOpen(false)}
+          onSuccess={() => {
+            setIsAddModalOpen(false);
+            fetchRecords();
+            setMessage({ type: 'success', text: 'New school record added successfully!' });
           }}
         />
       )}
