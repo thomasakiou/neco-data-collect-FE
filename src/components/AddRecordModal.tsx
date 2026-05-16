@@ -59,16 +59,19 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
   }, [formData.state_name, allLgas]);
 
   const filteredSchools = useMemo(() => {
-    if (!formData.lga) return [];
-    // Get unique schools from existing records in this LGA
+    if (!formData.state_name) return [];
+    // Get unique schools from existing records in this State (and optionally LGA)
     const schoolsMap = new Map<string, DataRecord>();
     existingRecords.forEach(r => {
-      if (r.lga === formData.lga && r.state_name === formData.state_name) {
+      const stateMatch = r.state_code === formData.state_code || r.state_name === formData.state_name;
+      const lgaMatch = !formData.lga || r.lga === formData.lga;
+
+      if (stateMatch && lgaMatch) {
         schoolsMap.set(r.sch_name, r);
       }
     });
     return Array.from(schoolsMap.values()).sort((a, b) => a.sch_name.localeCompare(b.sch_name));
-  }, [formData.lga, formData.state_name, existingRecords]);
+  }, [formData.lga, formData.state_name, formData.state_code, existingRecords]);
 
   const custodians = useMemo(() => {
     const map = new Map<string, CustodianInfo>();
@@ -235,12 +238,11 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
               </div>
               <div className="form-group">
                 <label className="form-label">LGA</label>
-                <select 
-                  name="lga" 
-                  className="form-control" 
-                  value={formData.lga ?? ''} 
-                  onChange={handleChange} 
-                  required 
+                <select
+                  name="lga"
+                  className="form-control"
+                  value={formData.lga ?? ''}
+                  onChange={handleChange}
                   disabled={!formData.state_name}
                 >
                   <option value="">Select LGA</option>
@@ -257,15 +259,15 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
             <div className="form-grid">
               <div className="form-group" style={{ gridColumn: 'span 2' }}>
                 <label className="form-label">School Name</label>
-                <input 
-                  type="text" 
-                  name="sch_name" 
-                  className="form-control" 
+                <input
+                  type="text"
+                  name="sch_name"
+                  className="form-control"
                   list="existing-schools"
-                  value={formData.sch_name} 
-                  onChange={handleChange} 
-                  required 
-                  disabled={!formData.lga}
+                  value={formData.sch_name}
+                  onChange={handleChange}
+                  required
+                  disabled={!formData.state_name}
                   placeholder="Type name or select existing..."
                 />
                 <datalist id="existing-schools">
@@ -274,7 +276,7 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
               </div>
               <div className="form-group">
                 <label className="form-label">School Number (Code)</label>
-                <input type="text" name="sch_num" className="form-control" value={formData.sch_num} onChange={handleChange} required />
+                <input type="text" name="sch_num" className="form-control" value={formData.sch_num} onChange={handleChange} />
               </div>
               <div className="form-group">
                 <label className="form-label">Email</label>
@@ -316,9 +318,9 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
             <div className="form-grid">
               <div className="form-group" style={{ gridColumn: 'span 2' }}>
                 <label className="form-label">Select Existing Custodian</label>
-                <select 
-                  className="form-control" 
-                  value={selectedCustodianId} 
+                <select
+                  className="form-control"
+                  value={selectedCustodianId}
                   onChange={(e) => handleChange({ target: { name: 'cust_name', value: e.target.value } } as any)}
                   disabled={!formData.state_name}
                 >
@@ -334,35 +336,34 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
                 <>
                   <div className="form-group" style={{ gridColumn: 'span 2' }}>
                     <label className="form-label">Custodian Name</label>
-                    <input 
-                      type="text" 
-                      name="cust_name" 
-                      className="form-control" 
-                      value={formData.cust_name ?? ''} 
+                    <input
+                      type="text"
+                      name="cust_name"
+                      className="form-control"
+                      value={formData.cust_name ?? ''}
                       onChange={handleChange}
                       placeholder="Enter custodian name"
-                      required={isNewCustodian}
                     />
                   </div>
                   <div className="form-group">
                     <label className="form-label">Custodian Code (Number)</label>
-                    <input 
-                      type="text" 
-                      name="cust_code" 
-                      className="form-control" 
-                      value={formData.cust_code ?? ''} 
-                      onChange={handleChange} 
+                    <input
+                      type="text"
+                      name="cust_code"
+                      className="form-control"
+                      value={formData.cust_code ?? ''}
+                      onChange={handleChange}
                       placeholder="Enter code"
                     />
                   </div>
                   <div className="form-group">
                     <label className="form-label">Custodian Town</label>
-                    <input 
-                      type="text" 
-                      name="cust_town" 
-                      className="form-control" 
-                      value={formData.cust_town ?? ''} 
-                      onChange={handleChange} 
+                    <input
+                      type="text"
+                      name="cust_town"
+                      className="form-control"
+                      value={formData.cust_town ?? ''}
+                      onChange={handleChange}
                       placeholder="Enter town"
                     />
                   </div>
@@ -378,12 +379,12 @@ const AddRecordModal: React.FC<AddRecordModalProps> = ({ examType, allLgas, exis
             <div className="form-grid">
               <div className="form-group">
                 <label className="form-label">Date of Last Accreditation</label>
-                <input 
-                  type="date" 
-                  name="accd_year" 
-                  className="form-control" 
-                  value={formatDateForInput(formData.accd_year || '')} 
-                  onChange={handleDateChange} 
+                <input
+                  type="date"
+                  name="accd_year"
+                  className="form-control"
+                  value={formatDateForInput(formData.accd_year || '')}
+                  onChange={handleDateChange}
                 />
               </div>
               <div className="form-group">

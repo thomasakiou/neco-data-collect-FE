@@ -192,7 +192,10 @@ const Admin: React.FC = () => {
           )}
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '2rem' }}>Loading users...</div>
+            <div style={{ textAlign: 'center', padding: '3rem' }}>
+              <RefreshCw size={24} className="animate-spin" style={{ color: 'var(--primary)', marginBottom: '0.5rem' }} />
+              <p style={{ color: 'var(--text-muted)' }}>Loading Records, Please Wait</p>
+            </div>
           ) : (
             <div className="table-container">
               <table>
