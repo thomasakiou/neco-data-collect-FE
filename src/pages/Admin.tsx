@@ -20,6 +20,7 @@ const Admin: React.FC = () => {
   const [resettingEmail, setResettingEmail] = useState<string | null>(null);
   const [deletingEmail, setDeletingEmail] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -174,6 +175,18 @@ const Admin: React.FC = () => {
               Create New Account
             </button>
           </div>
+
+          <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
+            <Search size={18} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by email or state..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{ paddingLeft: '2.5rem' }}
+            />
+          </div>
           
           {message && (
             <div style={{ 
@@ -208,7 +221,11 @@ const Admin: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {users.filter(u => {
+                    if (!searchTerm) return true;
+                    const term = searchTerm.toLowerCase();
+                    return u.email.toLowerCase().includes(term) || u.state_name.toLowerCase().includes(term) || u.state_code.toLowerCase().includes(term);
+                  }).map((user) => (
                     <tr key={user.email}>
                       <td style={{ fontWeight: 600, textTransform: 'lowercase' }}>{user.email}</td>
                       <td>{user.state_name}</td>

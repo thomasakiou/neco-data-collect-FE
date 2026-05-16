@@ -13,6 +13,7 @@ const Dashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [lgas, setLgas] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const navigate = useNavigate();
 
@@ -82,12 +83,22 @@ const Dashboard: React.FC = () => {
     return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
   }, [activeRecords]);
 
-  const filteredSchools = activeRecords.filter(r => {
-    if (!selectedCustodian) {
-      return !r.cust_name || r.cust_name.trim() === '';
+    const result = activeRecords.filter(r => {
+      if (!selectedCustodian) {
+        return !r.cust_name || r.cust_name.trim() === '';
+      }
+      return r.cust_name === selectedCustodian;
+    });
+
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      return result.filter(r => 
+        r.sch_name.toLowerCase().includes(term) || 
+        r.sch_num.toLowerCase().includes(term)
+      );
     }
-    return r.cust_name === selectedCustodian;
-  });
+    return result;
+  }, [activeRecords, selectedCustodian, searchTerm]);
 
   const totalPages = Math.ceil(filteredSchools.length / rowsPerPage);
   const paginatedSchools = useMemo(() => {
@@ -97,7 +108,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCustodian, examType, rowsPerPage]);
+  }, [selectedCustodian, searchTerm, examType, rowsPerPage]);
 
   const handleLogout = () => {
     authService.logout();
@@ -195,6 +206,19 @@ const Dashboard: React.FC = () => {
                 }}
               />
             </div>
+          </div>
+
+          {/* Search Bar */}
+          <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
+            <Search size={18} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by school name or number..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{ paddingLeft: '2.5rem' }}
+            />
           </div>
         </div>
 
