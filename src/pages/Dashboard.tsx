@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LogOut, MapPin, School as SchoolIcon, Edit3, Filter, Key, FileSpreadsheet, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LogOut, MapPin, School as SchoolIcon, Edit3, Filter, Key, FileSpreadsheet, RefreshCw, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { authService, dataService, lgaService, type DataRecord, type ExamType } from '../services/api.service';
 import EditRecordModal from '../components/EditRecordModal';
 
@@ -83,6 +83,7 @@ const Dashboard: React.FC = () => {
     return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
   }, [activeRecords]);
 
+  const filteredSchools = useMemo(() => {
     const result = activeRecords.filter(r => {
       if (!selectedCustodian) {
         return !r.cust_name || r.cust_name.trim() === '';
