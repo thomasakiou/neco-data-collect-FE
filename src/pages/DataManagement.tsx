@@ -8,6 +8,7 @@ import {
 import { authService, dataService, lgaService, type DataRecord, type ExamType, type LGARecord } from '../services/api.service';
 import EditRecordModal from '../components/EditRecordModal.tsx';
 import AddRecordModal from '../components/AddRecordModal.tsx';
+import MultiSelect from '../components/MultiSelect.tsx';
 
 const DataManagement: React.FC = () => {
   const [examType, setExamType] = useState<ExamType>('ssce');
@@ -29,11 +30,11 @@ const DataManagement: React.FC = () => {
   const navigate = useNavigate();
 
   // Filter states
-  const [filterState, setFilterState] = useState('');
-  const [filterCustodian, setFilterCustodian] = useState('');
-  const [filterType, setFilterType] = useState('');
-  const [filterCategory, setFilterCategory] = useState('');
-  const [filterLga, setFilterLga] = useState('');
+  const [filterStates, setFilterStates] = useState<string[]>([]);
+  const [filterCustodians, setFilterCustodians] = useState<string[]>([]);
+  const [filterTypes, setFilterTypes] = useState<string[]>([]);
+  const [filterCategories, setFilterCategories] = useState<string[]>([]);
+  const [filterLgas, setFilterLgas] = useState<string[]>([]);
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -81,13 +82,13 @@ const DataManagement: React.FC = () => {
     const categoriesSet = new Set<string>();
     const lgasSet = new Set<string>();
 
-    const filterStateUpper = filterState?.toUpperCase();
+    const filterStateUppers = filterStates.map(s => s.toUpperCase());
 
     // Single pass to gather all filter options
     records.forEach(r => {
       if (r.state_name) statesSet.add(r.state_name);
 
-      const isMatchState = !filterState || r.state_name === filterState;
+      const isMatchState = filterStates.length === 0 || filterStates.includes(r.state_name);
 
       if (isMatchState) {
         if (r.cust_name && !custodiansMap.has(r.cust_name)) {
@@ -100,7 +101,7 @@ const DataManagement: React.FC = () => {
 
     // LGAs come from allLgas state which is already state-filtered in some cases
     allLgas.forEach(l => {
-      if (!filterState || l.state_name.toUpperCase() === filterStateUpper) {
+      if (filterStates.length === 0 || filterStateUppers.includes(l.state_name.toUpperCase())) {
         lgasSet.add(l.lga_name);
       }
     });
@@ -114,21 +115,28 @@ const DataManagement: React.FC = () => {
     const lgas = Array.from(lgasSet).sort();
 
     return { states, custodians, types, categories, lgas };
-  }, [records, filterState, allLgas]);
+  }, [records, filterStates, allLgas]);
 
   // Apply filters & search
   const filteredRecords = useMemo(() => {
     const term = debouncedSearchTerm.toLowerCase();
     return records.filter(r => {
-      if (filterState && r.state_name !== filterState) return false;
-      if (filterCustodian === '__UNASSIGNED__') {
-        if (r.cust_name && r.cust_name.trim() !== '') return false;
-      } else if (filterCustodian && r.cust_name !== filterCustodian) {
-        return false;
+      if (filterStates.length > 0 && !filterStates.includes(r.state_name)) return false;
+
+      if (filterCustodians.length > 0) {
+        const hasUnassigned = filterCustodians.includes('__UNASSIGNED__');
+        if (hasUnassigned) {
+          const isUnassigned = !r.cust_name || r.cust_name.trim() === '';
+          const isMatchedCustodian = r.cust_name && filterCustodians.includes(r.cust_name);
+          if (!isUnassigned && !isMatchedCustodian) return false;
+        } else {
+          if (!r.cust_name || !filterCustodians.includes(r.cust_name)) return false;
+        }
       }
-      if (filterType && r.type !== filterType) return false;
-      if (filterCategory && r.category !== filterCategory) return false;
-      if (filterLga && r.lga !== filterLga) return false;
+
+      if (filterTypes.length > 0 && (!r.type || !filterTypes.includes(r.type))) return false;
+      if (filterCategories.length > 0 && (!r.category || !filterCategories.includes(r.category))) return false;
+      if (filterLgas.length > 0 && (!r.lga || !filterLgas.includes(r.lga))) return false;
 
       if (term) {
         return (
@@ -142,7 +150,7 @@ const DataManagement: React.FC = () => {
       }
       return true;
     });
-  }, [records, filterState, filterCustodian, filterType, filterCategory, filterLga, debouncedSearchTerm]);
+  }, [records, filterStates, filterCustodians, filterTypes, filterCategories, filterLgas, debouncedSearchTerm]);
 
   const completionStats = useMemo(() => {
     const total = filteredRecords.length;
@@ -160,7 +168,13 @@ const DataManagement: React.FC = () => {
     return { complete, total, percentage };
   }, [filteredRecords]);
 
-  const activeFilterCount = [filterState, filterCustodian, filterType, filterCategory, filterLga].filter(Boolean).length;
+  const activeFilterCount = [
+    filterStates.length > 0,
+    filterCustodians.length > 0,
+    filterTypes.length > 0,
+    filterCategories.length > 0,
+    filterLgas.length > 0
+  ].filter(Boolean).length;
 
   // Pagination
   const totalPages = Math.ceil(filteredRecords.length / rowsPerPage);
@@ -172,20 +186,20 @@ const DataManagement: React.FC = () => {
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [filterState, filterCustodian, filterType, filterCategory, filterLga, searchTerm, rowsPerPage]);
+  }, [filterStates, filterCustodians, filterTypes, filterCategories, filterLgas, searchTerm, rowsPerPage]);
 
   // Clear dependent filters when state changes
   useEffect(() => {
-    setFilterCustodian('');
-    setFilterLga('');
-  }, [filterState]);
+    setFilterCustodians([]);
+    setFilterLgas([]);
+  }, [filterStates]);
 
   const clearFilters = () => {
-    setFilterState('');
-    setFilterCustodian('');
-    setFilterType('');
-    setFilterCategory('');
-    setFilterLga('');
+    setFilterStates([]);
+    setFilterCustodians([]);
+    setFilterTypes([]);
+    setFilterCategories([]);
+    setFilterLgas([]);
     setSearchTerm('');
   };
 
@@ -252,9 +266,9 @@ const DataManagement: React.FC = () => {
 
     // Build filename from active filters
     const parts = [examType.toUpperCase()];
-    if (filterState) parts.push(filterState.replace(/\s+/g, '_'));
-    if (filterCustodian) parts.push(filterCustodian.replace(/\s+/g, '_'));
-    if (filterType) parts.push(filterType);
+    if (filterStates.length > 0) parts.push(filterStates.slice(0, 2).map(s => s.replace(/\s+/g, '_')).join('_'));
+    if (filterCustodians.length > 0) parts.push(filterCustodians.slice(0, 2).map(c => c.replace(/\s+/g, '_')).join('_'));
+    if (filterTypes.length > 0) parts.push(filterTypes.join('_'));
     parts.push('data');
 
     link.href = url;
@@ -550,39 +564,58 @@ const DataManagement: React.FC = () => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.75rem' }}>
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.25rem', display: 'block' }}>State</label>
-                  <select className="form-control" style={{ padding: '0.5rem' }} value={filterState} onChange={e => setFilterState(e.target.value)}>
-                    <option value="">All States</option>
-                    {filterOptions.states.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  <MultiSelect
+                    label="State"
+                    placeholder="State"
+                    options={filterOptions.states.map(s => ({ label: s, value: s }))}
+                    selectedValues={filterStates}
+                    onChange={setFilterStates}
+                  />
                 </div>
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.25rem', display: 'block' }}>Custodian</label>
-                  <select className="form-control" style={{ padding: '0.5rem' }} value={filterCustodian} onChange={e => setFilterCustodian(e.target.value)}>
-                    <option value="">All Custodians</option>
-                    <option value="__UNASSIGNED__">-- Schools without Custodian Points --</option>
-                    {filterOptions.custodians.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
-                  </select>
+                  <MultiSelect
+                    label="Custodian"
+                    placeholder="Custodian"
+                    options={[
+                      { label: '-- Schools without Custodian Points --', value: '__UNASSIGNED__' },
+                      ...filterOptions.custodians.map(c => ({ label: c.name, value: c.name }))
+                    ]}
+                    selectedValues={filterCustodians}
+                    onChange={setFilterCustodians}
+                  />
                 </div>
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.25rem', display: 'block' }}>Type</label>
-                  <select className="form-control" style={{ padding: '0.5rem' }} value={filterType} onChange={e => setFilterType(e.target.value)}>
-                    <option value="">All Types</option>
-                    {filterOptions.types.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  <MultiSelect
+                    label="Type"
+                    placeholder="Type"
+                    options={filterOptions.types.map(t => ({ label: t, value: t }))}
+                    selectedValues={filterTypes}
+                    onChange={setFilterTypes}
+                    showSearch={false}
+                  />
                 </div>
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.25rem', display: 'block' }}>Category</label>
-                  <select className="form-control" style={{ padding: '0.5rem' }} value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
-                    <option value="">All Categories</option>
-                    {filterOptions.categories.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                  <MultiSelect
+                    label="Category"
+                    placeholder="Category"
+                    options={filterOptions.categories.map(c => ({ label: c, value: c }))}
+                    selectedValues={filterCategories}
+                    onChange={setFilterCategories}
+                    showSearch={false}
+                  />
                 </div>
                 <div>
                   <label style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '0.25rem', display: 'block' }}>LGA</label>
-                  <select className="form-control" style={{ padding: '0.5rem' }} value={filterLga} onChange={e => setFilterLga(e.target.value)}>
-                    <option value="">All LGAs</option>
-                    {filterOptions.lgas.map(l => <option key={l} value={l}>{l}</option>)}
-                  </select>
+                  <MultiSelect
+                    label="LGA"
+                    placeholder="LGA"
+                    options={filterOptions.lgas.map(l => ({ label: l, value: l }))}
+                    selectedValues={filterLgas}
+                    onChange={setFilterLgas}
+                  />
                 </div>
               </div>
             </div>
