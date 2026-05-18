@@ -111,7 +111,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
 
   const isComplete = (data: Partial<DataRecord>) => {
     const check = (val: string | null | undefined) => !!val && val.trim() !== '';
-    return check(data.state_name) && check(data.state_code) && check(data.sch_num) && check(data.sch_name) && check(data.cust_name) && check(data.cust_code) && check(data.cust_town) && check(data.lga) && check(data.lga_code) && check(data.type) && check(data.category) && check(data.accd_year) && check(data.sch_email) && check(data.accreditation_type) && check(data.locality);
+    return check(data.state_name) && check(data.state_code) && check(data.sch_num) && check(data.sch_name) && check(data.cust_name) && check(data.cust_code) && check(data.cust_town) && check(data.lga) && check(data.lga_code) && check(data.type) && check(data.category) && check(data.accd_year) && check(data.accreditation_type) && check(data.locality);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -184,7 +184,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ record, examType, cus
 
               <div className="form-group">
                 <label className="form-label">Email</label>
-                <input type="email" name="sch_email" className="form-control" value={formData.sch_email ?? ''} onChange={handleChange} required={!isAdmin} />
+                <input type="email" name="sch_email" className="form-control" value={formData.sch_email ?? ''} onChange={handleChange} />
               </div>
 
               <div className="form-group">

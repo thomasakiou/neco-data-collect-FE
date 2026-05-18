@@ -27,7 +27,6 @@ const EditSchoolModal: React.FC<Props> = ({ school, onClose, onSave }) => {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.email) newErrors.email = 'School email is mandatory';
     if (!formData.lastAccreditationDate) newErrors.lastAccreditationDate = 'Date is mandatory';
     if (!formData.gender) newErrors.gender = 'Please select gender type';
     if (!formData.ownership) newErrors.ownership = 'Please select ownership type';

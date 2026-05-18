@@ -160,7 +160,6 @@ const DataManagement: React.FC = () => {
       r.lga && r.lga.trim() !== '' &&
       r.lga_code && r.lga_code.trim() !== '' &&
       r.accd_year && r.accd_year.trim() !== '' &&
-      r.sch_email && r.sch_email.trim() !== '' &&
       r.accreditation_type && r.accreditation_type.trim() !== '' &&
       r.locality && r.locality.trim() !== ''
     ).length;
