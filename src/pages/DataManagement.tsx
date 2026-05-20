@@ -251,7 +251,7 @@ const DataManagement: React.FC = () => {
         `"${r.category || ''}"`,
         `"${r.accd_year || ''}"`,
         `"${r.lga || ''}"`,
-        `"${r.lga_code || ''}"`,
+        `"${r.lga_code ? String(r.lga_code).padStart(6, '0') : ''}"`,
         `"${r.accreditation_type || ''}"`,
         `"${r.locality || ''}"`,
       ];
