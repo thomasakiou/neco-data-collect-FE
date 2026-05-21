@@ -88,9 +88,10 @@ const DataManagement: React.FC = () => {
 
     // Single pass to gather all filter options
     records.forEach(r => {
-      if (r.state_name) statesSet.add(r.state_name);
+      const stateNameUpper = r.state_name ? r.state_name.toUpperCase() : '';
+      if (stateNameUpper) statesSet.add(stateNameUpper);
 
-      const isMatchState = filterStates.length === 0 || filterStates.includes(r.state_name);
+      const isMatchState = filterStates.length === 0 || (r.state_name && filterStates.includes(r.state_name.toUpperCase()));
 
       if (isMatchState) {
         if (r.cust_name && !custodiansMap.has(r.cust_name)) {
@@ -123,7 +124,7 @@ const DataManagement: React.FC = () => {
   const filteredRecords = useMemo(() => {
     const term = debouncedSearchTerm.toLowerCase();
     return records.filter(r => {
-      if (filterStates.length > 0 && !filterStates.includes(r.state_name)) return false;
+      if (filterStates.length > 0 && r.state_name && !filterStates.includes(r.state_name.toUpperCase())) return false;
 
       if (filterCustodians.length > 0) {
         const hasUnassigned = filterCustodians.includes('__UNASSIGNED__');
@@ -396,7 +397,7 @@ const DataManagement: React.FC = () => {
     // Group by state
     const stateMap = new Map<string, { total: number; done: number }>();
     records.forEach(r => {
-      const state = r.state_name || 'UNKNOWN';
+      const state = (r.state_name || 'UNKNOWN').toUpperCase();
       if (!stateMap.has(state)) stateMap.set(state, { total: 0, done: 0 });
       const entry = stateMap.get(state)!;
       entry.total++;
@@ -456,7 +457,7 @@ const DataManagement: React.FC = () => {
       head: [['S/N', 'State', 'Total', 'Done', 'Remaining', '% Done']],
       body: tableBody,
       styles: { fontSize: 9, cellPadding: 3 },
-      headStyles: { fillColor: [30, 64, 175], textColor: 255, fontStyle: 'bold' },
+      headStyles: { fillColor: [22, 101, 52], textColor: 255, fontStyle: 'bold' },
       alternateRowStyles: { fillColor: [245, 247, 250] },
       columnStyles: {
         0: { halign: 'center', cellWidth: 15 },
@@ -735,7 +736,7 @@ const DataManagement: React.FC = () => {
 
               <button
                 className="btn btn-outline"
-                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', color: '#16a34a', borderColor: '#16a34a' }}
+                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', color: '#7c3aed', borderColor: '#7c3aed' }}
                 onClick={handleDownloadStatsPDF}
                 disabled={records.length === 0}
                 title="Download per-state statistics as PDF"
