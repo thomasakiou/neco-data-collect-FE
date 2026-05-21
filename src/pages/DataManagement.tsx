@@ -276,6 +276,108 @@ const DataManagement: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  // Download Custodians CSV
+  const handleDownloadCustodians = () => {
+    if (filteredRecords.length === 0) return;
+
+    // Build unique custodians list from filtered records
+    const custodiansMap = new Map<string, { name: string, code: string, state_code: string, lga_code: string, town: string }>();
+    filteredRecords.forEach(r => {
+      if (!r.cust_name) return;
+
+      const existing = custodiansMap.get(r.cust_name);
+
+      // Try to get LGA code from record or lookup by LGA name
+      let lgaCode = r.lga_code;
+      if (!lgaCode && r.lga && allLgas.length > 0) {
+        const found = allLgas.find(l =>
+          l.lga_name.toUpperCase() === r.lga?.toUpperCase() &&
+          l.state_name.toUpperCase() === r.state_name.toUpperCase()
+        );
+        if (found) lgaCode = found.lga_code;
+      }
+
+      if (!existing) {
+        custodiansMap.set(r.cust_name, {
+          name: r.cust_name,
+          code: r.cust_code || '',
+          state_code: r.state_code || '',
+          lga_code: lgaCode || '',
+          town: r.cust_town || ''
+        });
+      } else {
+        // Try to fill in missing fields from other records for the same custodian
+        if (!existing.code && r.cust_code) existing.code = r.cust_code;
+        if (!existing.state_code && r.state_code) existing.state_code = r.state_code;
+        if (!existing.lga_code && lgaCode) existing.lga_code = lgaCode;
+        if (!existing.town && r.cust_town) existing.town = r.cust_town;
+      }
+    });
+
+    const headers = ['name', 'code', 'state_code', 'lga_code', 'town', 'status'];
+    const csvRows = [headers.join(',')];
+
+    Array.from(custodiansMap.values()).forEach(c => {
+      const row = [
+        `"${c.name}"`,
+        `"${c.code}"`,
+        `"${c.state_code}"`,
+        `"${c.lga_code}"`,
+        `"${c.town}"`,
+        '"Active"'
+      ];
+      csvRows.push(row.join(','));
+    });
+
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `${examType.toUpperCase()}_Custodians.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Download Schools CSV
+  const handleDownloadSchools = () => {
+    if (filteredRecords.length === 0) return;
+
+    const headers = ['code', 'name', 'state_code', 'lga_code', 'custodian_code', 'category', 'email', 'approval_status', 'accreditation_type', 'accredited_date', 'gender', 'locality', 'accrd_year', 'status'];
+    const csvRows = [headers.join(',')];
+
+    filteredRecords.forEach(r => {
+      const row = [
+        `"${r.sch_num}"`,
+        `"${r.sch_name}"`,
+        `"${r.state_code}"`,
+        `"${r.lga_code}"`,
+        `"${r.cust_code}"`,
+        `"${r.category || ''}"`,
+        `"${r.sch_email || ''}"`,
+        '""', // approval_status
+        `"${r.accreditation_type || ''}"`,
+        `"${r.accd_year || ''}"`, // Date
+        `"${r.type || ''}"`, // Type (gender)
+        `"${r.locality || ''}"`,
+        '"2026"', // accrd_year
+        '"Active"' // status
+      ];
+      csvRows.push(row.join(','));
+    });
+
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `${examType.toUpperCase()}_Schools.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   // Bulk delete
   const handleBulkDelete = async () => {
     if (selectedIds.size === 0) return;
@@ -510,6 +612,28 @@ const DataManagement: React.FC = () => {
                 Download CSV
               </button>
 
+              <button
+                className="btn btn-outline"
+                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', color: 'var(--primary)', borderColor: 'var(--primary)' }}
+                onClick={handleDownloadCustodians}
+                disabled={filteredRecords.length === 0}
+                title="Download unique custodians as CSV"
+              >
+                <Download size={16} />
+                Custodians
+              </button>
+
+              <button
+                className="btn btn-outline"
+                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', color: 'var(--primary)', borderColor: 'var(--primary)' }}
+                onClick={handleDownloadSchools}
+                disabled={filteredRecords.length === 0}
+                title="Download schools as CSV"
+              >
+                <Download size={16} />
+                Schools
+              </button>
+
               {/* Filter Toggle */}
               <button
                 className={`btn btn-outline`}
@@ -730,7 +854,7 @@ const DataManagement: React.FC = () => {
                         <td style={{ fontSize: '0.85rem' }}>{record.lga || '—'}</td>
                         <td style={{ fontSize: '0.85rem' }}><code>{record.lga_code || '—'}</code></td>
                         <td style={{ fontSize: '0.85rem' }}>{record.accd_year || '—'}</td>
-                        <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'lowercase' }}>{record.sch_email?.toLowerCase() || '—'}</td>
+                        <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{record.sch_email || '—'}</td>
                         <td>
                           {record.locality ? (
                             <span style={{
