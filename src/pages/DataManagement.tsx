@@ -3,8 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import {
   Upload, Download, Filter, Search, Trash2, RefreshCw,
   ArrowLeft, Database, ChevronDown, ChevronLeft, ChevronRight, X, AlertTriangle,
-  FileSpreadsheet, LogOut, Key, Users, Edit3, Plus
+  FileSpreadsheet, LogOut, Key, Users, Edit3, Plus, FileText
 } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { authService, dataService, lgaService, type DataRecord, type ExamType, type LGARecord } from '../services/api.service';
 import EditRecordModal from '../components/EditRecordModal.tsx';
 import AddRecordModal from '../components/AddRecordModal.tsx';
@@ -378,6 +380,103 @@ const DataManagement: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  // Download Statistics PDF
+  const handleDownloadStatsPDF = () => {
+    if (records.length === 0) return;
+
+    const isComplete = (r: DataRecord) =>
+      r.type && r.type.trim() !== '' &&
+      r.category && r.category.trim() !== '' &&
+      r.lga && r.lga.trim() !== '' &&
+      r.lga_code && r.lga_code.trim() !== '' &&
+      r.accd_year && r.accd_year.trim() !== '' &&
+      r.accreditation_type && r.accreditation_type.trim() !== '' &&
+      r.locality && r.locality.trim() !== '';
+
+    // Group by state
+    const stateMap = new Map<string, { total: number; done: number }>();
+    records.forEach(r => {
+      const state = r.state_name || 'UNKNOWN';
+      if (!stateMap.has(state)) stateMap.set(state, { total: 0, done: 0 });
+      const entry = stateMap.get(state)!;
+      entry.total++;
+      if (isComplete(r)) entry.done++;
+    });
+
+    const stateStats = Array.from(stateMap.entries())
+      .map(([state, stats]) => ({
+        state,
+        total: stats.total,
+        done: stats.done,
+        remaining: stats.total - stats.done,
+        percentage: stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0
+      }))
+      .sort((a, b) => a.state.localeCompare(b.state));
+
+    const grandTotal = stateStats.reduce((s, r) => s + r.total, 0);
+    const grandDone = stateStats.reduce((s, r) => s + r.done, 0);
+    const grandRemaining = grandTotal - grandDone;
+    const grandPercent = grandTotal > 0 ? Math.round((grandDone / grandTotal) * 100) : 0;
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Title
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${examType.toUpperCase()} Data Collection Statistics`, pageWidth / 2, 20, { align: 'center' });
+
+    // Date
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Generated: ${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}`, pageWidth / 2, 28, { align: 'center' });
+
+    // Table
+    const tableBody = stateStats.map((s, i) => [
+      i + 1,
+      s.state,
+      s.total.toLocaleString(),
+      s.done.toLocaleString(),
+      s.remaining.toLocaleString(),
+      `${s.percentage}%`
+    ]);
+
+    // Summary row
+    tableBody.push([
+      '' as any,
+      'TOTAL',
+      grandTotal.toLocaleString(),
+      grandDone.toLocaleString(),
+      grandRemaining.toLocaleString(),
+      `${grandPercent}%`
+    ]);
+
+    autoTable(doc, {
+      startY: 35,
+      head: [['S/N', 'State', 'Total', 'Done', 'Remaining', '% Done']],
+      body: tableBody,
+      styles: { fontSize: 9, cellPadding: 3 },
+      headStyles: { fillColor: [30, 64, 175], textColor: 255, fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [245, 247, 250] },
+      columnStyles: {
+        0: { halign: 'center', cellWidth: 15 },
+        2: { halign: 'center' },
+        3: { halign: 'center' },
+        4: { halign: 'center' },
+        5: { halign: 'center' },
+      },
+      didParseCell: (data: any) => {
+        // Bold the summary row
+        if (data.row.index === tableBody.length - 1) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor = [219, 234, 254];
+        }
+      },
+    });
+
+    doc.save(`${examType.toUpperCase()}_Statistics_Report.pdf`);
+  };
+
   // Bulk delete
   const handleBulkDelete = async () => {
     if (selectedIds.size === 0) return;
@@ -632,6 +731,17 @@ const DataManagement: React.FC = () => {
               >
                 <Download size={16} />
                 Schools
+              </button>
+
+              <button
+                className="btn btn-outline"
+                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', color: '#7c3aed', borderColor: '#7c3aed' }}
+                onClick={handleDownloadStatsPDF}
+                disabled={records.length === 0}
+                title="Download per-state statistics as PDF"
+              >
+                <FileText size={16} />
+                Statistics PDF
               </button>
 
               {/* Filter Toggle */}
