@@ -735,7 +735,7 @@ const DataManagement: React.FC = () => {
 
               <button
                 className="btn btn-outline"
-                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', color: '#7c3aed', borderColor: '#7c3aed' }}
+                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', color: '#16a34a', borderColor: '#16a34a' }}
                 onClick={handleDownloadStatsPDF}
                 disabled={records.length === 0}
                 title="Download per-state statistics as PDF"
