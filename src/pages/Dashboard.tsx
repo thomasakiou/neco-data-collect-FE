@@ -14,6 +14,7 @@ const Dashboard: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [lgas, setLgas] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [universalSearchTerm, setUniversalSearchTerm] = useState('');
 
   const navigate = useNavigate();
 
@@ -72,7 +73,7 @@ const Dashboard: React.FC = () => {
   }, [records]);
 
   const custodians = useMemo(() => {
-    const map = new Map<string, {name: string, code: string, town: string}>();
+    const map = new Map<string, { name: string, code: string, town: string }>();
     // Optimization: only process activeRecords once
     for (let i = 0; i < activeRecords.length; i++) {
       const r = activeRecords[i];
@@ -93,13 +94,22 @@ const Dashboard: React.FC = () => {
 
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      return result.filter(r => 
-        r.sch_name.toLowerCase().includes(term) || 
+      return result.filter(r =>
+        r.sch_name.toLowerCase().includes(term) ||
         r.sch_num.toLowerCase().includes(term)
       );
     }
     return result;
   }, [activeRecords, selectedCustodian, searchTerm]);
+
+  const universalSearchResults = useMemo(() => {
+    if (!universalSearchTerm || universalSearchTerm.trim().length < 2) return [];
+    const term = universalSearchTerm.toLowerCase().trim();
+    return records.filter(r =>
+      (r.sch_name && r.sch_name.toLowerCase().includes(term)) ||
+      (r.sch_num && r.sch_num.toLowerCase().includes(term))
+    ).slice(0, 15);
+  }, [records, universalSearchTerm]);
 
   const totalPages = Math.ceil(filteredSchools.length / rowsPerPage);
   const paginatedSchools = useMemo(() => {
@@ -167,6 +177,67 @@ const Dashboard: React.FC = () => {
               {t.toUpperCase()}
             </button>
           ))}
+        </div>
+
+        {/* Universal Search Card */}
+        <div className="card animate-fade-in" style={{ marginBottom: '2rem', borderLeft: '4px solid var(--primary)', background: 'linear-gradient(to right, rgba(14, 165, 233, 0.05), white)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+            <Search className="text-primary" size={20} color="var(--primary)" />
+            <h2 style={{ fontSize: '1.25rem', margin: 0 }}>Universal School Search</h2>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>Search any school in the state by name or number</span>
+          </div>
+
+          <div style={{ position: 'relative' }}>
+            <Search size={18} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search across all state records..."
+              value={universalSearchTerm}
+              onChange={e => setUniversalSearchTerm(e.target.value)}
+              style={{ paddingLeft: '2.5rem', fontSize: '1rem', padding: '0.6rem 0.6rem 0.6rem 2.5rem' }}
+            />
+          </div>
+
+          {universalSearchTerm.trim().length >= 2 && (
+            <div style={{ marginTop: '1rem', background: 'white', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+              {universalSearchResults.length > 0 ? (
+                <div className="table-container" style={{ margin: 0 }}>
+                  <table style={{ margin: 0 }}>
+                    <thead>
+                      <tr style={{ background: 'var(--bg-subtle)' }}>
+                        <th>School Number</th>
+                        <th>School Name</th>
+                        <th>Custodian Assigned</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {universalSearchResults.map(record => (
+                        <tr key={`univ-${record.id}`}>
+                          <td>{record.sch_num}</td>
+                          <td style={{ fontWeight: 500 }}>{record.sch_name}</td>
+                          <td>
+                            {record.cust_name && record.cust_name.trim() !== '' ? (
+                              <div>
+                                <div style={{ fontWeight: 500, color: 'var(--text-color)' }}>{record.cust_name}</div>
+                                {record.cust_code && <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{record.cust_code}</div>}
+                              </div>
+                            ) : (
+                              <span style={{ color: '#ef4444', fontWeight: 500, fontSize: '0.85rem', background: 'rgba(239, 68, 68, 0.1)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>Not Assigned</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  No schools found matching "{universalSearchTerm}"
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="card animate-fade-in" style={{ marginBottom: '2rem' }}>
