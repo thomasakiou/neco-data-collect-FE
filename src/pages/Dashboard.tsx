@@ -105,11 +105,11 @@ const Dashboard: React.FC = () => {
   const universalSearchResults = useMemo(() => {
     if (!universalSearchTerm || universalSearchTerm.trim().length < 2) return [];
     const term = universalSearchTerm.toLowerCase().trim();
-    return records.filter(r =>
+    return activeRecords.filter(r =>
       (r.sch_name && r.sch_name.toLowerCase().includes(term)) ||
       (r.sch_num && r.sch_num.toLowerCase().includes(term))
     ).slice(0, 15);
-  }, [records, universalSearchTerm]);
+  }, [activeRecords, universalSearchTerm]);
 
   const totalPages = Math.ceil(filteredSchools.length / rowsPerPage);
   const paginatedSchools = useMemo(() => {
@@ -209,13 +209,29 @@ const Dashboard: React.FC = () => {
                         <th>School Number</th>
                         <th>School Name</th>
                         <th>Custodian Assigned</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {universalSearchResults.map(record => (
                         <tr key={`univ-${record.id}`}>
                           <td>{record.sch_num}</td>
-                          <td style={{ fontWeight: 500 }}>{record.sch_name}</td>
+                          <td style={{ fontWeight: 500 }}>
+                            <button
+                              onClick={() => setEditingRecord(record)}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: 'var(--primary)',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                padding: 0,
+                                textAlign: 'left'
+                              }}
+                            >
+                              {record.sch_name}
+                            </button>
+                          </td>
                           <td>
                             {record.cust_name && record.cust_name.trim() !== '' ? (
                               <div>
@@ -225,6 +241,16 @@ const Dashboard: React.FC = () => {
                             ) : (
                               <span style={{ color: '#ef4444', fontWeight: 500, fontSize: '0.85rem', background: 'rgba(239, 68, 68, 0.1)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>Not Assigned</span>
                             )}
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-outline"
+                              style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem' }}
+                              onClick={() => setEditingRecord(record)}
+                            >
+                              <Edit3 size={14} />
+                              View/Edit
+                            </button>
                           </td>
                         </tr>
                       ))}
